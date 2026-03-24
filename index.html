@@ -443,8 +443,36 @@
     }
 
     /* ═══ PROJECT CARD ═══ */
+    .proj-section-label {
+      font-size: .72rem; font-weight: 600; font-family: var(--font-mono);
+      text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-sub); margin-bottom: .55rem;
+      display: flex; align-items: center; gap: .45rem;
+    }
+    .proj-section-label:not(:first-child) { margin-top: 1.2rem; }
+    .proj-section-label::before {
+      content: ''; width: 3px; height: 14px; border-radius: 2px;
+    }
+    .proj-section-label.web::before { background: var(--orange); }
+    .proj-section-label.ios::before { background: var(--teal); }
+
     .proj-stores { display: flex; gap: .5rem; margin-top: auto; padding-top: .6rem; }
     .store-badge { height: 34px; }
+    .proj-visit-link {
+      display: inline-flex; align-items: center; gap: .35rem;
+      margin-top: auto; padding-top: .6rem;
+    }
+    .proj-visit-link a {
+      display: inline-flex; align-items: center; gap: .3rem;
+      font-family: var(--font-mono); font-size: .72rem; font-weight: 600;
+      color: var(--orange); text-decoration: none;
+      padding: .35rem .75rem; border: 1px solid var(--orange);
+      border-radius: 6px; transition: background .15s, color .15s;
+    }
+    .proj-visit-link a:hover {
+      background: var(--orange); color: #fff;
+    }
+    .proj-visit-link a svg { width: 14px; height: 14px; }
 
     .proj-card {
       display: flex; flex-direction: column;
@@ -713,6 +741,7 @@
       </div>
     </div>
     <div class="widget-body">
+      <div class="proj-section-label ios">iOS Apps</div>
       <div class="card-grid">
         <div class="proj-card">
           <div class="proj-card-head">
@@ -791,6 +820,25 @@
             <a href="https://apps.apple.com/app/id6760126826" target="_blank" rel="noopener noreferrer">
               <img class="icon-dark store-badge" src="assets/Download_on_the_App_Store_Badge_US-UK_RGB_wht_092917.svg" alt="Download on the App Store">
               <img class="icon-light store-badge" src="assets/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="Download on the App Store">
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="proj-section-label web">Web Services</div>
+      <div class="card-grid">
+        <div class="proj-card">
+          <div class="proj-card-head">
+            <img src="assets/icon_katteni.svg" alt="勝手に公式サイト" class="proj-icon">
+            <h3>勝手に公式サイト</h3>
+          </div>
+          <p class="proj-desc">「良い店なのに公式サイトがない。だから、勝手に作る。」公式サイトを持たない地元の優良店舗を紹介する非公式ポータルサイト。</p>
+          <div class="proj-tech">
+            <span>Next.js</span><span>React</span><span>Tailwind CSS</span><span>Cloudflare</span>
+          </div>
+          <div class="proj-visit-link">
+            <a href="https://official-site.katteni.workers.dev/" target="_blank" rel="noopener noreferrer">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+              Visit Site
             </a>
           </div>
         </div>
