@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小田原千年絵巻 — 空撮タイムラプス</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#fcfaf4;--accent:#e3a35c;
+  --font-display:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  --font-body:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--font-body);background:#15161a;color:var(--paper);overflow:hidden}
+#app{position:fixed;inset:0}
+canvas{display:block}
+
+.brand{position:absolute;top:1.3rem;left:1.5rem;z-index:5;pointer-events:none}
+.brand h1{font-family:var(--font-display);font-weight:600;font-size:1.05rem;letter-spacing:.3em;text-shadow:0 1px 12px rgba(0,0,0,.5)}
+.brand p{font-size:.64rem;letter-spacing:.34em;opacity:.8;margin-top:.25rem}
+
+.yearchip{
+  position:absolute;top:1.2rem;right:1.4rem;z-index:5;text-align:right;
+  background:rgba(16,17,20,.55);backdrop-filter:blur(6px);
+  border:1px solid rgba(252,250,244,.18);border-radius:6px;
+  padding:.55rem 1rem .6rem;min-width:12rem;
+}
+.yearchip .era{font-family:var(--font-display);font-size:.75rem;letter-spacing:.35em;color:var(--accent);display:block}
+.yearchip .yr{font-family:var(--font-display);font-size:1.65rem;font-weight:600;letter-spacing:.05em;font-variant-numeric:tabular-nums}
+.yearchip .stat{display:block;font-size:.68rem;letter-spacing:.14em;opacity:.85;margin-top:.2rem;border-top:1px solid rgba(252,250,244,.16);padding-top:.3rem}
+
+.ticker{position:absolute;top:7.4rem;right:1.4rem;z-index:5;width:min(300px,72vw);display:flex;flex-direction:column;gap:.45rem;pointer-events:none}
+.toast{
+  background:rgba(16,17,20,.62);backdrop-filter:blur(6px);
+  border:1px solid rgba(252,250,244,.16);border-left:3px solid var(--accent);
+  border-radius:4px;padding:.5rem .8rem;font-size:.74rem;line-height:1.6;letter-spacing:.04em;
+  opacity:0;transform:translateX(14px);transition:opacity .5s,transform .5s;
+}
+.toast.show{opacity:1;transform:translateX(0)}
+.toast .y{font-family:var(--font-display);color:var(--accent);letter-spacing:.12em;margin-right:.5em}
+
+.label3d{
+  position:absolute;z-index:4;pointer-events:none;transform:translate(-50%,-100%);
+  font-size:.68rem;letter-spacing:.22em;color:var(--paper);white-space:nowrap;
+  text-shadow:0 1px 8px rgba(0,0,0,.8);opacity:0;transition:opacity .6s;
+  padding-bottom:14px;
+}
+.label3d::after{content:"";position:absolute;left:50%;bottom:0;width:1px;height:12px;background:rgba(252,250,244,.7)}
+.label3d small{display:block;font-size:.56rem;letter-spacing:.18em;opacity:.75;text-align:center}
+
+.caption{
+  position:absolute;left:50%;bottom:8.4rem;transform:translateX(-50%);z-index:5;
+  max-width:min(660px,90vw);text-align:center;pointer-events:none;
+  font-size:.92rem;line-height:1.9;letter-spacing:.06em;
+  text-shadow:0 1px 10px rgba(0,0,0,.7);
+  opacity:0;transition:opacity .8s ease;
+}
+.caption.show{opacity:1}
+.caption strong{font-family:var(--font-display);font-weight:600;letter-spacing:.2em;display:block;font-size:1.12rem;margin-bottom:.3rem;color:#f0d9b8}
+
+.controls{
+  position:absolute;left:50%;bottom:1.3rem;transform:translateX(-50%);z-index:6;
+  width:min(800px,94vw);
+  background:rgba(16,17,20,.62);backdrop-filter:blur(8px);
+  border:1px solid rgba(252,250,244,.16);border-radius:10px;
+  padding:.85rem 1.1rem .65rem;
+}
+.row1{display:flex;align-items:center;gap:.85rem}
+button.ctl{
+  flex:none;width:42px;height:42px;border-radius:50%;cursor:pointer;
+  border:1px solid rgba(252,250,244,.5);background:rgba(252,250,244,.08);
+  color:var(--paper);font-size:1rem;line-height:1;transition:background .25s;
+}
+button.ctl:hover{background:rgba(252,250,244,.18)}
+button.pill{
+  flex:none;cursor:pointer;border:1px solid rgba(252,250,244,.35);
+  background:transparent;color:var(--paper);border-radius:5px;
+  font-size:.7rem;letter-spacing:.1em;padding:.45rem .65rem;white-space:nowrap;
+}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.track{position:relative;flex:1;display:flex;align-items:center}
+.track .mark{position:absolute;top:50%;width:3px;height:3px;border-radius:50%;background:rgba(252,250,244,.65);transform:translate(-50%,-50%);pointer-events:none}
+input[type=range]{
+  width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;
+  background:linear-gradient(to right,var(--accent) var(--fill,0%),rgba(252,250,244,.22) var(--fill,0%));
+  cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fcfaf4;border:2px solid var(--accent)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fcfaf4;border:2px solid var(--accent)}
+.eras{display:flex;justify-content:space-between;margin-top:.55rem;padding:0 .2rem}
+.eras button{
+  background:none;border:none;color:rgba(252,250,244,.55);cursor:pointer;
+  font-size:.66rem;letter-spacing:.16em;font-family:var(--font-body);padding:.15rem .1rem;
+}
+.eras button.on{color:var(--accent)}
+
+.splash{
+  position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1.5rem;text-align:center;
+  background:rgba(13,14,17,.68);backdrop-filter:blur(3px);transition:opacity .9s ease;
+}
+.splash.hide{opacity:0;pointer-events:none}
+.splash h2{font-family:var(--font-display);font-weight:600;font-size:clamp(1.7rem,5vw,2.9rem);letter-spacing:.34em;text-indent:.34em}
+.splash p{font-size:.8rem;letter-spacing:.3em;opacity:.85}
+.splash .note{font-size:.62rem;letter-spacing:.18em;opacity:.55;max-width:30em;line-height:1.9}
+.splash button{
+  margin-top:.4rem;cursor:pointer;font-family:var(--font-display);font-size:.95rem;letter-spacing:.4em;text-indent:.4em;
+  color:var(--paper);background:transparent;border:1px solid rgba(252,250,244,.6);
+  border-radius:999px;padding:.95rem 2.6rem;transition:background .3s;
+}
+.splash button:hover{background:rgba(252,250,244,.14)}
+
+@media (max-width:640px){
+  .yearchip{min-width:9rem;padding:.45rem .7rem .5rem}.yearchip .yr{font-size:1.25rem}
+  .ticker{top:7rem;width:min(240px,70vw)}
+  .caption{bottom:9.2rem;font-size:.8rem}
+  .eras button{letter-spacing:.04em}
+  .brand h1{font-size:.9rem}
+  .label3d{font-size:.6rem}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div class="brand">
+  <h1>小田原千年絵巻</h1>
+  <p>AERIAL TIMELAPSE — BC3000 → 2026</p>
+</div>
+
+<div class="yearchip">
+  <span class="era" id="eralabel">縄文〜古代</span>
+  <span class="yr" id="yearlabel">紀元前3000年</span>
+  <span class="stat" id="statlabel">海辺の小さな集落</span>
+</div>
+
+<div class="ticker" id="ticker"></div>
+<div id="labels"></div>
+<p class="caption" id="caption"></p>
+
+<div class="controls">
+  <div class="row1">
+    <button class="ctl" id="play" aria-label="再生">▶</button>
+    <div class="track" id="track">
+      <input type="range" id="seek" min="0" max="700" value="0" step="1" aria-label="時間をスクラブ">
+    </div>
+    <button class="pill" id="cam" aria-label="視点切替">視点: 旋回</button>
+    <button class="pill" id="speed" aria-label="再生速度">×1</button>
+  </div>
+  <div class="eras" id="eras">
+    <button data-i="0">縄文</button><button data-i="1">中世</button><button data-i="2">北条五代</button>
+    <button data-i="3">小田原合戦</button><button data-i="4">江戸</button><button data-i="5">近代</button><button data-i="6">現代</button>
+  </div>
+</div>
+
+<div class="splash" id="splash">
+  <h2>小田原千年絵巻</h2>
+  <p>空から見る、町の五千年</p>
+  <p class="note">地形と町並みは史実をもとにデフォルメして再現したものです。<br>再生中に右上へ、その年の出来事が流れます。</p>
+  <button id="start">再生する</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+"use strict";
+var ERAS=[
+  {label:"縄文〜古代",sky:0xe8d5b8,sea:0x3e6e8c,sunI:.95,ambI:.95,stat:"海辺の小さな集落",
+   cap:"<strong>海辺のはじまり</strong>相模湾と足柄の山に抱かれ、貝塚を残した海辺の集落から小田原の物語は始まります。"},
+  {label:"中世・大森氏",sky:0xc9d4d8,sea:0x3a6582,sunI:.85,ambI:.9,stat:"城下のはじまり",
+   cap:"<strong>城のたつ丘</strong>15世紀、駿河から進出した大森氏が八幡山に城を構え、酒匂川の流域に田畑が広がります。"},
+  {label:"戦国・北条五代",sky:0xb7c9de,sea:0x39647f,sunI:.9,ambI:.9,stat:"関東有数の城下町へ",
+   cap:"<strong>北条五代の都</strong>北条早雲の奪取から五代100年。町ごと囲む全長約9kmの総構を備えた、難攻不落の関東の都へ。"},
+  {label:"小田原合戦",sky:0x1c2240,sea:0x14243a,sunI:.1,ambI:.26,stat:"籠城 約3か月",
+   cap:"<strong>天下人、城を囲む</strong>1590年、秀吉の大軍が包囲。石垣山に一夜城が現れ、籠城の夜に無数の篝火が灯ります。"},
+  {label:"江戸時代",sky:0xdce8ee,sea:0x3e6e8c,sunI:.95,ambI:.95,stat:"宿場の家数 約1,500軒(1843年)",
+   cap:"<strong>東海道屈指の宿場町</strong>箱根越えを控えた東海道有数の宿場へ。街道沿いに町家と松並木が連なり、旅人で賑わいます。"},
+  {label:"近代",sky:0xc9b9a4,sea:0x46637a,sunI:.7,ambI:.8,stat:"鉄道のまちへ",
+   cap:"<strong>崩れる石垣</strong>廃城令で城は姿を消し、鉄道が延び、1923年の関東大震災が町を激しく揺らします。"},
+  {label:"現代",sky:0xbfdcea,sea:0x3a72a0,sunI:1,ambI:1,stat:"人口 約18万人の都市",
+   cap:"<strong>よみがえる天守</strong>1960年に天守が復興、新幹線が町を駆け抜け、城址公園を核に歴史とともに生きる都市へ。"}
+];
+var YEARS=[-3000,1432,1495,1590,1601,1868,1960,2026];
+var SEG_SEC=9;
+
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function lerp(a,b,t){return a+(b-a)*t;}
+function ss(t){t=clamp(t,0,1);return t*t*(3-2*t);}
+function gauss(dx,dz,r){return Math.exp(-(dx*dx+dz*dz)/(2*r*r));}
+function noise(x,z){return Math.sin(x*.31)*Math.cos(z*.27)*.5+Math.sin(x*.071+z*.093)*.5;}
+function yearToP(y){
+  for(var i=0;i<7;i++)if(y<=YEARS[i+1])return i+(y-YEARS[i])/(YEARS[i+1]-YEARS[i]);
+  return 7;
+}
+var P1923=yearToP(1923);
+
+function coastZ(x){return 40-.1*x-6*Math.sin(x*.045);}
+function terrainH(x,z){
+  var h=.9+noise(x,z)*.35;
+  h+=ss((-x-38)/45)*(24+6*Math.sin(z*.11)+4*noise(x*.5,z*.5));
+  h+=ss((-z-42)/45)*(18+5*Math.sin(x*.09));
+  h+=gauss(x+30,z-36,8)*8.5;
+  h+=gauss(x-2,z-20,6.5)*4.6;
+  var sea=ss((z-coastZ(x))/7);
+  h=lerp(h,-4,sea);
+  var rd=Math.abs(x-(38+4*Math.sin(z*.06)));
+  h-=ss(1-rd/4)*ss((z+95)/40)*(z<coastZ(x)?.7:0);
+  return h;
+}
+function onLand(x,z){var h=terrainH(x,z);return h>1&&h<7;}
+
+var isMobile=innerWidth<700;
+var reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+var scene=new THREE.Scene();
+var camera=new THREE.PerspectiveCamera(46,innerWidth/innerHeight,1,900);
+var renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));
+renderer.setSize(innerWidth,innerHeight);
+if(!isMobile){renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;}
+document.getElementById("app").appendChild(renderer.domElement);
+scene.fog=new THREE.Fog(0xe8d5b8,170,440);
+
+var hemi=new THREE.HemisphereLight(0xfff4e0,0x6b7a5a,.95);scene.add(hemi);
+var sun=new THREE.DirectionalLight(0xffeeda,.9);
+sun.position.set(80,120,-60);
+if(!isMobile){
+  sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);
+  var sc=sun.shadow.camera;sc.left=-95;sc.right=95;sc.top=95;sc.bottom=-95;sc.near=20;sc.far=320;
+  sun.shadow.bias=-0.0008;
+}
+scene.add(sun);
+var fires=[];
+for(var fl=0;fl<4;fl++){
+  var pl=new THREE.PointLight(0xff8a33,0,32);
+  pl.position.set([-20,24,2,-6][fl],4,[22,28,0,42][fl]);
+  scene.add(pl);fires.push(pl);
+}
+
+var MATS={};
+function mat(hex){
+  if(!MATS[hex])MATS[hex]=new THREE.MeshLambertMaterial({color:hex});
+  return MATS[hex];
+}
+
+(function buildTerrain(){
+  var seg=120,size=280;
+  var g=new THREE.PlaneGeometry(size,size,seg,seg);
+  g.rotateX(-Math.PI/2);
+  var pos=g.attributes.position,colors=[];
+  var cPlain=new THREE.Color(0x8ba864),cMid=new THREE.Color(0x6f8a55),
+      cRock=new THREE.Color(0x8d8d86),cSand=new THREE.Color(0xcfc09a),
+      cSea=new THREE.Color(0x9a8c66),c=new THREE.Color();
+  for(var i=0;i<pos.count;i++){
+    var x=pos.getX(i),z=pos.getZ(i),h=terrainH(x,z);
+    pos.setY(i,h);
+    if(h<-.5)c.copy(cSea);
+    else if(h<1.0)c.copy(cSand).lerp(cPlain,ss((h+.5)/1.5));
+    else if(h<8)c.copy(cPlain).lerp(cMid,ss((h-1)/7)).offsetHSL(0,0,noise(x*2,z*2)*.025);
+    else c.copy(cMid).lerp(cRock,ss((h-8)/14));
+    colors.push(c.r,c.g,c.b);
+  }
+  g.setAttribute("color",new THREE.Float32BufferAttribute(colors,3));
+  g.computeVertexNormals();
+  var m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true}));
+  m.receiveShadow=true;scene.add(m);
+})();
+
+var seaMesh,seaBase;
+(function buildSea(){
+  var g=new THREE.PlaneGeometry(290,290,52,52);
+  g.rotateX(-Math.PI/2);
+  seaBase=g.attributes.position.array.slice();
+  seaMesh=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:0x3e6e8c,transparent:true,opacity:.93}));
+  scene.add(seaMesh);
+})();
+
+var clouds=[];
+(function buildClouds(){
+  for(var i=0;i<7;i++){
+    var g=new THREE.Group(),m=new THREE.MeshLambertMaterial({color:0xffffff,transparent:true,opacity:.85});
+    var n=3+Math.floor(Math.random()*3);
+    for(var j=0;j<n;j++){
+      var s=new THREE.Mesh(new THREE.SphereGeometry(3+Math.random()*4,7,6),m);
+      s.position.set(j*4-n*2+Math.random()*2,Math.random()*1.5,Math.random()*3-1.5);
+      s.scale.y=.5;g.add(s);
+    }
+    g.position.set(Math.random()*260-130,52+Math.random()*16,Math.random()*200-110);
+    g.userData={spd:.6+Math.random()*.9,mat:m};
+    clouds.push(g);scene.add(g);
+  }
+})();
+
+var stars;
+(function buildStars(){
+  var pos=[];
+  for(var i=0;i<320;i++){
+    var th=Math.random()*Math.PI*2,ph=Math.random()*Math.PI*.42;
+    pos.push(Math.cos(th)*Math.sin(ph)*380,Math.cos(ph)*380,Math.sin(th)*Math.sin(ph)*380);
+  }
+  var g=new THREE.BufferGeometry();
+  g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
+  stars=new THREE.Points(g,new THREE.PointsMaterial({color:0xe9e6d8,size:1.7,transparent:true,opacity:0,sizeAttenuation:false}));
+  scene.add(stars);
+})();
+var moonMesh=new THREE.Mesh(new THREE.SphereGeometry(7,12,12),new THREE.MeshBasicMaterial({color:0xe9e6d8,transparent:true,opacity:0}));
+moonMesh.position.set(-140,150,-200);scene.add(moonMesh);
+
+function ribbon(points,w,hex,y,thick){
+  var grp=new THREE.Group(),m=mat(hex);
+  for(var i=0;i<points.length-1;i++){
+    var a=points[i],b=points[i+1];
+    var dx=b[0]-a[0],dz=b[1]-a[1],len=Math.sqrt(dx*dx+dz*dz);
+    var seg=new THREE.Mesh(new THREE.BoxGeometry(len+w*.5,thick||.25,w),m);
+    seg.position.set((a[0]+b[0])/2,y,(a[1]+b[1])/2);
+    seg.rotation.y=-Math.atan2(dz,dx);
+    seg.receiveShadow=true;
+    grp.add(seg);
+  }
+  return grp;
+}
+var sakawa=[],hk=[];
+for(var zz=-95;zz<=46;zz+=8)sakawa.push([38+4*Math.sin(zz*.06),zz]);
+scene.add(ribbon(sakawa,3,0x4d7d99,1.0));
+for(var k=0;k<=8;k++)hk.push([-62+k*5.4,30+k*2.1]);
+scene.add(ribbon(hk,2,0x4d7d99,1.15));
+
+var objects=[];
+function reg(obj,born,die,opts){
+  opts=opts||{};
+  var u=obj.userData;
+  u.born=born;u.die=(die==null?99:die);u.quake=!!opts.quake;u.sy=obj.scale.y;
+  obj.visible=false;objects.push(obj);scene.add(obj);return obj;
+}
+function box(w,h,d,hex,x,z,ry,noShadow){
+  var g=new THREE.BoxGeometry(w,h,d);g.translate(0,h/2,0);
+  var m=new THREE.Mesh(g,mat(hex));
+  m.position.set(x,terrainH(x,z),z);if(ry)m.rotation.y=ry;
+  if(!noShadow){m.castShadow=true;m.receiveShadow=true;}
+  return m;
+}
+function cone(r,h,hex,x,z,sides){
+  var g=new THREE.ConeGeometry(r,h,sides||4);g.translate(0,h/2,0);
+  var m=new THREE.Mesh(g,mat(hex));
+  m.position.set(x,terrainH(x,z),z);m.rotation.y=Math.PI/4;
+  m.castShadow=true;
+  return m;
+}
+function gabled(w,h,d,wallHex,roofHex,x,z,ry){
+  var g=new THREE.Group();
+  var wg=new THREE.BoxGeometry(w,h,d);wg.translate(0,h/2,0);
+  var wall=new THREE.Mesh(wg,mat(wallHex));wall.castShadow=true;wall.receiveShadow=true;
+  var rg=new THREE.ConeGeometry(Math.max(w,d)*.78,h*.6,4);rg.translate(0,h*.3,0);
+  var roof=new THREE.Mesh(rg,mat(roofHex));roof.position.y=h;roof.rotation.y=Math.PI/4;roof.scale.set(w>=d?1:w/d,1,w>=d?d/w:1);roof.castShadow=true;
+  g.add(wall,roof);
+  g.position.set(x,terrainH(x,z),z);if(ry)g.rotation.y=ry;
+  return g;
+}
+function rnd(seed){var s=seed;return function(){s=Math.sin(s*127.1+311.7)*43758.5453;return s-Math.floor(s);};}
+var R=rnd(7);
+
+function buildCastle(scaleW,wallHex,roofHex,stoneHex,x,z){
+  var g=new THREE.Group(),s=scaleW;
+  function part(geo,hex,y){
+    var m=new THREE.Mesh(geo,mat(hex));m.position.y=y;m.castShadow=true;m.receiveShadow=true;g.add(m);return m;
+  }
+  var bg=new THREE.BoxGeometry(8*s,2.6,8*s);bg.translate(0,1.3,0);part(bg,stoneHex,0);
+  var t1=new THREE.BoxGeometry(5.2*s,2.2,5.2*s);t1.translate(0,1.1,0);part(t1,wallHex,2.6);
+  var r1=new THREE.ConeGeometry(4.1*s,1.1,4);r1.translate(0,.55,0);var rm1=part(r1,roofHex,4.7);rm1.rotation.y=Math.PI/4;
+  var t2=new THREE.BoxGeometry(4*s,1.9,4*s);t2.translate(0,.95,0);part(t2,wallHex,5.3);
+  var r2=new THREE.ConeGeometry(3.2*s,1,4);r2.translate(0,.5,0);var rm2=part(r2,roofHex,7.1);rm2.rotation.y=Math.PI/4;
+  var t3=new THREE.BoxGeometry(2.9*s,1.7,2.9*s);t3.translate(0,.85,0);part(t3,wallHex,7.7);
+  var r3=new THREE.ConeGeometry(2.5*s,1.6,4);r3.translate(0,.8,0);var rm3=part(r3,roofHex,9.4);rm3.rotation.y=Math.PI/4;
+  var fin=new THREE.BoxGeometry(.5,.5,.16);fin.translate(0,.25,0);part(fin,0xd9b13b,10.9);
+  g.position.set(x,terrainH(x,z),z);
+  return g;
+}
+function banner(x,z,flagHex){
+  var g=new THREE.Group();
+  var pole=new THREE.Mesh(new THREE.BoxGeometry(.16,4.4,.16),mat(0x4a463c));
+  pole.geometry.translate(0,2.2,0);g.add(pole);
+  var fg=new THREE.BoxGeometry(1.1,1.9,.07);fg.translate(.62,-.95,0);
+  var flag=new THREE.Mesh(fg,mat(flagHex));flag.position.y=4.3;flag.castShadow=true;g.add(flag);
+  var mk=new THREE.Mesh(new THREE.ConeGeometry(.3,.45,3),mat(0x2c3548));
+  mk.position.set(.62,3.4,.06);g.add(mk);
+  g.position.set(x,terrainH(x,z),z);
+  return g;
+}
+
+for(var ip=0;ip<8;ip++){
+  var ap=Math.PI*2*R(),rp=4+R()*9,xp=2+Math.cos(ap)*rp,zp=30+Math.sin(ap)*rp*.5;
+  if(!onLand(xp,zp))continue;
+  reg(cone(1.5,2.4,0x8a6f4d,xp,zp),0.06+R()*.5,1.25);
+}
+(function canoes(){
+  for(var i=0;i<2;i++){
+    var c=new THREE.Mesh(new THREE.BoxGeometry(2.2,.35,.6),mat(0x6b5436));
+    c.geometry.translate(0,.17,0);
+    c.position.set(18+i*14,0,52+i*6);
+    c.userData.bob=Math.random()*6;
+    reg(c,.2,1.4);
+  }
+})();
+
+(function paddies(){
+  var g=new THREE.Group();
+  for(var i=0;i<26;i++){
+    var x=24+R()*22,z=-30+R()*55;
+    if(terrainH(x,z)<1||terrainH(x,z)>3)continue;
+    var p=new THREE.Mesh(new THREE.BoxGeometry(3.6,.18,2.6),mat(0x9fbe6a));
+    p.geometry.translate(0,.09,0);
+    p.position.set(x,terrainH(x,z),z);p.receiveShadow=true;
+    g.add(p);
+  }
+  reg(g,1.1,99);
+})();
+reg(gabled(3.4,2.6,3.4,0x7a6a52,0x4c4032,2,20.5),1.1,2.12);
+for(var i1=0;i1<18;i1++){
+  var a1=R()*6.28,r1=6+R()*14,x1=2+Math.cos(a1)*r1,z1=26+Math.sin(a1)*r1*.7;
+  if(!onLand(x1,z1))continue;
+  reg(gabled(1.6,1.1,1.4,0x9a8460,0x5c4f3c,x1,z1,R()*3),1.15+R()*.7,2.3+R()*.3);
+}
+
+reg(buildCastle(.9,0xf3efe4,0x3d4350,0x8e9196,2,20.5),2.05,5.04);
+reg(banner(6.4,18.5,0xf3efe4),2.2,4.02);
+reg(banner(-2.4,22.5,0xf3efe4),2.3,4.02);
+(function sogamae(){
+  var wall=new THREE.Group(),moat=new THREE.Group();
+  for(var s=0;s<48;s++){
+    var a=s/48*Math.PI*2,x=2+Math.cos(a)*20,z=25+Math.sin(a)*15;
+    if(terrainH(x,z)>1){
+      var m=new THREE.Mesh(new THREE.BoxGeometry(3,1.7,1.2),mat(0x6e5f3f));
+      m.geometry.translate(0,.85,0);
+      m.position.set(x,terrainH(x,z),z);m.rotation.y=-a;m.castShadow=true;
+      wall.add(m);
+    }
+    var xm=2+Math.cos(a)*22.4,zm=25+Math.sin(a)*16.8;
+    if(terrainH(xm,zm)>1){
+      var w=new THREE.Mesh(new THREE.BoxGeometry(3.2,.16,1.6),mat(0x4d7d99));
+      w.geometry.translate(0,.08,0);
+      w.position.set(xm,terrainH(xm,zm)+.55,zm);w.rotation.y=-a;
+      moat.add(w);
+    }
+  }
+  reg(wall,2.45,4.1);reg(moat,2.5,4.1);
+})();
+for(var i2=0;i2<85;i2++){
+  var a2=R()*6.28,r2=4+R()*13,x2=2+Math.cos(a2)*r2,z2=25+Math.sin(a2)*r2*.72;
+  if(!onLand(x2,z2))continue;
+  reg(gabled(1.5+R(),1+R()*.5,1.3+R()*.6,[0xcdb98e,0xbfa87c,0xd6c49a][i2%3],0x5c5142,x2,z2,R()*3),2.2+R()*.75,99,{quake:R()<.4});
+}
+(function sailboats(){
+  for(var i=0;i<3;i++){
+    var g=new THREE.Group();
+    var hull=new THREE.Mesh(new THREE.BoxGeometry(2.6,.4,.9),mat(0x8a7354));
+    hull.geometry.translate(0,.2,0);g.add(hull);
+    var sail=new THREE.Mesh(new THREE.BoxGeometry(.08,2.2,1.5),mat(0xf2ecd9));
+    sail.geometry.translate(0,1.1,0);sail.position.y=.4;sail.castShadow=true;g.add(sail);
+    g.position.set(-10+i*22,0,55+(i%2)*9);
+    g.userData.bob=i*2.3;
+    reg(g,2.3,5.6);
+  }
+})();
+
+reg(buildCastle(.55,0xefe9da,0x3d4350,0x9b9da2,-30,36),3.06,4.05);
+reg(banner(-26,33,0xefe9da),3.1,4.04);
+(function siege(){
+  var fg=new THREE.Group(),fmat=new THREE.MeshBasicMaterial({color:0xffa540});
+  for(var s=0;s<30;s++){
+    var a=s/30*Math.PI*2,x=2+Math.cos(a)*26,z=25+Math.sin(a)*19;
+    if(terrainH(x,z)<1)continue;
+    var f=new THREE.Mesh(new THREE.SphereGeometry(.55,8,8),fmat);
+    f.position.set(x,terrainH(x,z)+.8,z);fg.add(f);
+  }
+  fg.userData.flicker=true;
+  reg(fg,3.04,4.02);
+  var tg=new THREE.Group();
+  for(var t=0;t<22;t++){
+    var a3=R()*6.28,x3=2+Math.cos(a3)*(29+R()*5),z3=25+Math.sin(a3)*(21+R()*4);
+    if(terrainH(x3,z3)<1||terrainH(x3,z3)>6)continue;
+    var tm=new THREE.Mesh(new THREE.ConeGeometry(1,1.5,4),mat(0xe6dccb));
+    tm.geometry.translate(0,.75,0);
+    tm.position.set(x3,terrainH(x3,z3),z3);tm.castShadow=true;tg.add(tm);
+  }
+  reg(tg,3.1,4.02);
+})();
+
+var tokaidoPts=[];
+for(var xx=-70;xx<=80;xx+=10)tokaidoPts.push([xx,33+3*Math.sin(xx*.03)]);
+reg(ribbon(tokaidoPts,2.6,0xcbb58a,1.38),4.05,99);
+for(var i4=0;i4<52;i4++){
+  var x4=-58+i4*2.4+R()*1.2,z4=33+3*Math.sin(x4*.03)+(i4%2?3:-3)+R();
+  if(!onLand(x4,z4))continue;
+  reg(gabled(2,1.2,1.4,[0xefe6d2,0xe2d6bc][i4%2],0x544c3e,x4,z4),4.1+R()*.8,99,{quake:R()<.45});
+}
+for(var i4b=0;i4b<16;i4b++){
+  var x4b=-62+i4b*8.6,z4b=33+3*Math.sin(x4b*.03)+(i4b%2?5.4:-5.4);
+  if(!onLand(x4b,z4b))continue;
+  reg(cone(1.2,2.8,0x4d6447,x4b,z4b,6),4.15+R()*.7,99);
+}
+for(var i4c=0;i4c<46;i4c++){
+  var a4=R()*6.28,r4=6+R()*17,x4c=2+Math.cos(a4)*r4,z4c=25+Math.sin(a4)*r4*.75;
+  if(!onLand(x4c,z4c))continue;
+  reg(gabled(1.4+R(),1+R()*.5,1.3+R()*.5,0xe8dcc2,0x5c5142,x4c,z4c,R()*3),4.2+R()*.75,99,{quake:R()<.45});
+}
+
+var railPts=[];
+for(var xr=-75;xr<=85;xr+=12)railPts.push([xr,18+2*Math.sin(xr*.04)]);
+reg(ribbon(railPts,1.2,0x3c3a36,1.42),5.27,99);
+for(var i5=0;i5<8;i5++){
+  var x5=8+i5*4+R()*2,z5=14+R()*5;
+  if(!onLand(x5,z5))continue;
+  reg(box(2.4,2.6+R(),2,0xa3614a,x5,z5),5.2+R()*.5,99,{quake:R()<.5});
+}
+reg(box(4.6,1.8,2.4,0xd9d2c2,12,17),5.55,99);
+
+(function modernStreets(){
+  var g=new THREE.Group();
+  for(var i=-3;i<=4;i++){
+    var pts=[];
+    for(var x=-26;x<=44;x+=14)pts.push([x,4+i*4.4]);
+    g.add(ribbon(pts,.9,0x8a929c,1.32));
+  }
+  for(var j=0;j<7;j++){
+    var ptsV=[[-24+j*11,2],[-24+j*11,32]];
+    g.add(ribbon(ptsV,.9,0x8a929c,1.32));
+  }
+  reg(g,6.12,99);
+})();
+var hwPts=[];
+for(var xh=-70;xh<=80;xh+=10)hwPts.push([xh,coastZ(xh)-2.2]);
+reg(ribbon(hwPts,2.2,0x6f7780,1.5,.5),6.3,99);
+(function shinkansen(){
+  var pts=[];for(var xs=-75;xs<=85;xs+=12)pts.push([xs,9+1.5*Math.sin(xs*.05)]);
+  reg(ribbon(pts,1.6,0xb9c3cc,1.5),6.1,99);
+})();
+var train=new THREE.Group();
+(function(){
+  var body=new THREE.Mesh(new THREE.BoxGeometry(10,1,1.3),mat(0xf4f4f0));
+  body.geometry.translate(0,.5,0);body.castShadow=true;
+  var stripe=new THREE.Mesh(new THREE.BoxGeometry(10.02,.3,1.32),mat(0x2c4a63));
+  stripe.geometry.translate(0,.15,0);stripe.position.y=.35;
+  train.add(body,stripe);
+  reg(train,6.15,99);
+})();
+var cars=[];
+for(var ic=0;ic<3;ic++){
+  var car=new THREE.Mesh(new THREE.BoxGeometry(1.4,.5,.7),mat([0xd8dde2,0xc0392b,0x3a5a78][ic]));
+  car.geometry.translate(0,.25,0);
+  car.userData.off=ic*53;
+  cars.push(reg(car,6.32,99));
+}
+(function port(){
+  var g=new THREE.Group();
+  var bw=ribbon([[-22,49],[-12,52],[-6,57]],1.6,0x9aa0a8,.5,1.1);
+  g.add(bw);
+  for(var i=0;i<3;i++){
+    var b=new THREE.Mesh(new THREE.BoxGeometry(2.4,.5,1),mat(0xf0f0ea));
+    b.geometry.translate(0,.25,0);
+    b.position.set(-16+i*4,0,52+(i%2)*2);
+    b.userData.bob=i*1.7;
+    g.add(b);
+  }
+  reg(g,6.25,99);
+})();
+var ship=new THREE.Mesh(new THREE.BoxGeometry(7,1.4,2),mat(0x5d6a78));
+ship.geometry.translate(0,.7,0);
+reg(ship,6.2,99);
+
+reg(buildCastle(.95,0xfbf8ef,0x37404e,0x9b9da2,2,20.5),6.05,99);
+(function modernCity(){
+  for(var i=0;i<130;i++){
+    var x=-30+R()*72,z=2+R()*30;
+    if(!onLand(x,z))continue;
+    if(Math.abs(x-2)<6.5&&Math.abs(z-20.5)<6.5)continue;
+    var hh=1.5+R()*R()*10;
+    reg(box(1.8+R(),hh,1.8+R(),[0xb9c3cc,0xa9b4be,0xc8d0d8,0xd8d4c8][i%4],x,z,0,hh<2.5),6.08+R()*.85,99);
+  }
+})();
+
+var EVENTS=[
+  {y:1495,t:"北条早雲、小田原城を奪取"},
+  {y:1561,t:"上杉謙信が小田原城を包囲"},
+  {y:1569,t:"武田信玄が城下へ攻め寄せる"},
+  {y:1587,t:"町を囲む総構の大改修が進む"},
+  {y:1590,t:"豊臣秀吉の小田原攻め——北条氏降伏"},
+  {y:1601,t:"東海道の宿駅に小田原宿が定められる"},
+  {y:1633,t:"寛永小田原地震",fx:"quake"},
+  {y:1703,t:"元禄地震で甚大な被害",fx:"quake"},
+  {y:1707,t:"富士山・宝永噴火の降灰",fx:"ash"},
+  {y:1787,t:"二宮尊徳、栢山に生まれる"},
+  {y:1870,t:"小田原城が廃城に"},
+  {y:1887,t:"東海道線が国府津まで開通"},
+  {y:1920,t:"小田原駅が開業"},
+  {y:1923,t:"関東大震災——石垣が崩落",fx:"quake"},
+  {y:1960,t:"天守閣が復興"},
+  {y:1964,t:"東海道新幹線が開業"}
+];
+EVENTS.forEach(function(e){e.p=yearToP(e.y);e.fired=false;});
+
+var LABELS=[
+  {x:60,z:64,h:1,text:"相模湾",sub:"SAGAMI BAY",born:0,die:99},
+  {x:-80,z:0,h:26,text:"箱根の山々",sub:"HAKONE",born:0,die:99},
+  {x:40,z:-26,h:2,text:"酒匂川",sub:"SAKAWA RIV.",born:0,die:99},
+  {x:2,z:20.5,h:8,text:"大森氏の城",sub:"",born:1.12,die:2.04},
+  {x:2,z:20.5,h:14,text:"小田原城",sub:"ODAWARA CASTLE",born:2.08,die:5.03},
+  {x:2,z:25,h:4,text:"総構",sub:"全長 約9km",born:2.5,die:4.08},
+  {x:-30,z:36,h:14,text:"石垣山一夜城",sub:"1590",born:3.1,die:4.04},
+  {x:-20,z:33,h:3,text:"東海道 小田原宿",sub:"TOKAIDO",born:4.1,die:5.6},
+  {x:12,z:17,h:5,text:"小田原駅",sub:"1920—",born:5.58,die:99},
+  {x:2,z:20.5,h:14,text:"小田原城",sub:"1960 復興",born:6.08,die:99},
+  {x:-14,z:52,h:3,text:"小田原漁港",sub:"",born:6.28,die:99}
+];
+var labelWrap=document.getElementById("labels");
+LABELS.forEach(function(L){
+  var d=document.createElement("div");
+  d.className="label3d";
+  d.innerHTML=L.text+(L.sub?"<small>"+L.sub+"</small>":"");
+  labelWrap.appendChild(d);
+  L.el=d;
+  L.v=new THREE.Vector3(L.x,terrainH(L.x,L.z)+L.h,L.z);
+});
+
+var track=document.getElementById("track");
+EVENTS.forEach(function(e){
+  var m=document.createElement("span");
+  m.className="mark";
+  m.style.left=(e.p/7*100)+"%";
+  track.appendChild(m);
+});
+
+var p=0,playing=false,speed=1,speedIdx=1,SPEEDS=[.5,1,2],lastIdx=-1,
+    quakeT=-9,ashT=-99,camMode=0,CAM_NAMES=["旋回","俯瞰","低空"];
+var camCur={ang:-2.45,rad:98,y:60,fov:46};
+var playBtn=document.getElementById("play"),seek=document.getElementById("seek"),
+    speedBtn=document.getElementById("speed"),camBtn=document.getElementById("cam"),
+    eralabel=document.getElementById("eralabel"),yearlabel=document.getElementById("yearlabel"),
+    statlabel=document.getElementById("statlabel"),caption=document.getElementById("caption"),
+    ticker=document.getElementById("ticker"),
+    eraBtns=[].slice.call(document.querySelectorAll(".eras button")),
+    splash=document.getElementById("splash");
+var cA=new THREE.Color(),cB=new THREE.Color(),skyC=new THREE.Color(ERAS[0].sky),
+    seaA=new THREE.Color(),seaB=new THREE.Color(),ashC=new THREE.Color(0x9a8d72);
+
+function fmtYear(y){y=Math.round(y);return y<0?"紀元前"+(-y)+"年":y+"年";}
+function toast(ev){
+  var d=document.createElement("div");
+  d.className="toast";
+  d.innerHTML="<span class='y'>"+ev.y+"</span>"+ev.t;
+  ticker.appendChild(d);
+  requestAnimationFrame(function(){requestAnimationFrame(function(){d.classList.add("show");});});
+  setTimeout(function(){d.classList.remove("show");setTimeout(function(){d.remove();},600);},6500);
+  while(ticker.children.length>4)ticker.removeChild(ticker.firstChild);
+}
+function syncEvents(silent){
+  EVENTS.forEach(function(e){e.fired=e.p<=p;});
+  if(!silent)ticker.innerHTML="";
+}
+function setEraUI(idx){
+  eralabel.textContent=ERAS[idx].label;
+  statlabel.textContent=ERAS[idx].stat;
+  caption.innerHTML=ERAS[idx].cap;caption.classList.add("show");
+  for(var d=0;d<7;d++)eraBtns[d].classList.toggle("on",d===idx);
+}
+
+var tmpV=new THREE.Vector3();
+function updateLabels(){
+  var w=innerWidth,h=innerHeight;
+  LABELS.forEach(function(L){
+    var on=p>=L.born&&p<L.die;
+    if(!on){L.el.style.opacity=0;return;}
+    tmpV.copy(L.v).project(camera);
+    if(tmpV.z>1||tmpV.z<-1){L.el.style.opacity=0;return;}
+    L.el.style.opacity=.95;
+    L.el.style.left=((tmpV.x*.5+.5)*w)+"px";
+    L.el.style.top=((-tmpV.y*.5+.5)*h)+"px";
+  });
+}
+
+function update(dt,clock){
+  if(playing){
+    var prevP=p;
+    p+=dt*speed/SEG_SEC;
+    if(p>=7){p=7;setPlaying(false);playBtn.textContent="↺";}
+    EVENTS.forEach(function(e){
+      if(!e.fired&&e.p<=p){
+        e.fired=true;toast(e);
+        if(e.fx==="quake")quakeT=clock;
+        if(e.fx==="ash")ashT=clock;
+      }
+    });
+    if(prevP>p)syncEvents();
+  }
+  var lo=Math.floor(clamp(p,0,6.999)),f=p-lo,hi=Math.min(lo+1,6);
+  cA.setHex(ERAS[lo].sky);cB.setHex(ERAS[hi].sky);skyC.copy(cA).lerp(cB,ss(f));
+  var ashF=clamp(1-(clock-ashT)/4,0,1)*.65;
+  if(ashF>0)skyC.lerp(ashC,ashF);
+  scene.background=skyC;scene.fog.color.copy(skyC);
+  seaA.setHex(ERAS[lo].sea);seaB.setHex(ERAS[hi].sea);
+  seaMesh.material.color.copy(seaA).lerp(seaB,ss(f));
+  sun.intensity=lerp(ERAS[lo].sunI,ERAS[hi].sunI,f)*(1-ashF*.5);
+  hemi.intensity=lerp(ERAS[lo].ambI,ERAS[hi].ambI,f);
+  var nightF=clamp(1-Math.abs(p-3)*1.3,0,1);
+  stars.material.opacity=nightF*.9;
+  moonMesh.material.opacity=nightF;
+  var fI=nightF*(1.15+Math.sin(clock*7)*.2);
+  fires.forEach(function(pl,i){pl.intensity=fI*[1,.9,.7,.8][i];});
+  clouds.forEach(function(c){
+    c.position.x+=c.userData.spd*dt*(reduced?0:1);
+    if(c.position.x>150)c.position.x=-150;
+    c.userData.mat.opacity=.85*(1-nightF*.82)*(1-ashF*.4);
+  });
+
+  var sp=seaMesh.geometry.attributes.position,arr=seaBase;
+  if(!reduced){
+    for(var i=0;i<sp.count;i++){
+      var bx=arr[i*3],bz=arr[i*3+2];
+      sp.setY(i,Math.sin(bx*.18+clock*1.1)*.16+Math.cos(bz*.22+clock*.8)*.13);
+    }
+    sp.needsUpdate=true;
+    seaMesh.geometry.computeVertexNormals();
+  }
+
+  for(var oi=0;oi<objects.length;oi++){
+    var o=objects[oi],u=o.userData;
+    var s=ss((p-u.born)/.07)*(1-ss((p-u.die)/.05));
+    if(u.quake&&p>P1923&&p<6.02)s*=.18;
+    o.visible=s>.01;
+    if(o.visible){
+      o.scale.y=u.sy*s;
+      if(u.bob!==undefined)o.position.y=Math.sin(clock*1.4+u.bob)*.12;
+      if(u.flicker)o.scale.x=o.scale.z=1+Math.sin(clock*9)*.07;
+    }
+  }
+  train.position.x=((clock*17)%172)-86;
+  train.position.z=9+1.5*Math.sin(train.position.x*.05);
+  train.position.y=terrainH(train.position.x,train.position.z)+1.45;
+  cars.forEach(function(c){
+    var cx=(((clock*9+c.userData.off)%150)-75);
+    c.position.set(cx,1.78,coastZ(cx)-2.2);
+  });
+  ship.position.set(40-((clock*2.2)%110),Math.sin(clock*.9)*.1,62);
+
+  var tAng,tRad,tY,drift=(playing&&!reduced?clock*.008:0);
+  if(camMode===0){tAng=-2.45+p*.3+drift;tRad=98-12*nightF+10*ss((p-6));tY=60-16*nightF;}
+  else if(camMode===1){tAng=-2.2+p*.12+drift*.6;tRad=34;tY=140;}
+  else{tAng=-2.6+p*.34+drift*1.4;tRad=66;tY=24;}
+  camCur.ang+=(tAng-camCur.ang)*.045;
+  camCur.rad+=(tRad-camCur.rad)*.045;
+  camCur.y+=(tY-camCur.y)*.045;
+  camera.position.set(2+Math.cos(camCur.ang)*camCur.rad,camCur.y,22+Math.sin(camCur.ang)*camCur.rad*.85);
+  if(clock-quakeT<.9&&!reduced){
+    var q=(1-(clock-quakeT)/.9)*1.7;
+    camera.position.x+=(Math.random()-.5)*q;
+    camera.position.y+=(Math.random()-.5)*q;
+  }
+  camera.lookAt(2,2,20);
+
+  seek.value=Math.round(p*100);
+  seek.style.setProperty("--fill",(p/7*100)+"%");
+  var idx=Math.min(Math.floor(Math.max(p,0)),6);
+  yearlabel.textContent=fmtYear(lerp(YEARS[idx],YEARS[idx+1],clamp(p-idx,0,1)));
+  if(idx!==lastIdx){lastIdx=idx;setEraUI(idx);}
+  updateLabels();
+}
+function setPlaying(v){
+  playing=v;
+  playBtn.textContent=v?"❚❚":"▶";
+  playBtn.setAttribute("aria-label",v?"一時停止":"再生");
+}
+playBtn.addEventListener("click",function(){
+  if(!playing&&p>=7){p=0;syncEvents();}
+  setPlaying(!playing);
+});
+seek.addEventListener("input",function(){p=seek.value/100;syncEvents(true);ticker.innerHTML="";});
+speedBtn.addEventListener("click",function(){
+  speedIdx=(speedIdx+1)%3;speed=SPEEDS[speedIdx];speedBtn.textContent="×"+speed;
+});
+camBtn.addEventListener("click",function(){
+  camMode=(camMode+1)%3;camBtn.textContent="視点: "+CAM_NAMES[camMode];
+});
+eraBtns.forEach(function(b){
+  b.addEventListener("click",function(){
+    p=parseInt(b.getAttribute("data-i"),10)+.02;
+    syncEvents(true);ticker.innerHTML="";
+  });
+});
+document.getElementById("start").addEventListener("click",function(){
+  splash.classList.add("hide");
+  setPlaying(!reduced);
+});
+addEventListener("resize",function(){
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+addEventListener("keydown",function(e){
+  if(e.code==="Space"&&splash.classList.contains("hide")){e.preventDefault();playBtn.click();}
+});
+
+var prev=performance.now();
+function loop(now){
+  var dt=Math.min((now-prev)/1000,.1);prev=now;
+  update(dt,now/1000);
+  renderer.render(scene,camera);
+  requestAnimationFrame(loop);
+}
+update(0,0);
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
