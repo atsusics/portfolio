@@ -5,31 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>atsusics</title>
   <meta name="description" content="大嶋淳司のポートフォリオ。AWSを中心としたクラウドインフラ設計・運用、SRE、DevOpsの専門家。">
-  <meta name="theme-color" content="#08090d">
+  <meta name="theme-color" content="#0c0d11">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=IBM+Plex+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;600&family=Instrument+Serif:ital@1&family=IBM+Plex+Sans+JP:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add('js');</script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #08090d;
-      --glass: rgba(255,255,255,.035);
-      --glass-border: rgba(255,255,255,.09);
-      --hairline: rgba(255,255,255,.08);
-      --text: #eceae7;
-      --sub: #8f95a0;
-      --accent: #ff4d00;
-      --violet: #7c3aed;
-      --cyan: #22d3ee;
-      --green: #3fb950;
-      --font-display: 'Syne', 'IBM Plex Sans JP', sans-serif;
+      --bg: #0c0d11;
+      --text: #e9e5dc;
+      --sub: #8d8a83;
+      --hairline: rgba(233,229,220,.1);
+      --shu: #d5522e;
+      --gold: #c9a86a;
+      --green: #7fae62;
+      --font-min: 'Shippori Mincho B1', 'Hiragino Mincho ProN', serif;
+      --font-serif-latin: 'Instrument Serif', serif;
       --font-sans: 'IBM Plex Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', 'Consolas', monospace;
-      --rail: 120px;
     }
 
     html { scroll-behavior: smooth; }
@@ -38,12 +35,13 @@
       font-family: var(--font-sans);
       background: var(--bg);
       color: var(--text);
-      line-height: 1.75;
+      line-height: 2;
+      font-weight: 400;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
 
-    /* ═══ AURORA ═══ */
+    /* ═══ AMBIENT ═══ */
     .aurora {
       position: fixed; inset: 0; z-index: -2;
       overflow: hidden;
@@ -53,50 +51,33 @@
     .blob {
       position: absolute;
       border-radius: 50%;
-      filter: blur(90px);
+      filter: blur(110px);
       will-change: transform;
     }
 
     .blob.b1 {
-      width: 52vw; height: 52vw;
-      left: -12vw; top: -18vw;
-      background: radial-gradient(circle at 35% 35%, rgba(255,77,0,.5), transparent 66%);
-      animation: drift1 26s ease-in-out infinite alternate;
+      width: 55vw; height: 55vw;
+      left: -18vw; top: -22vw;
+      background: radial-gradient(circle at 40% 40%, rgba(213,82,46,.22), transparent 65%);
+      animation: drift1 44s ease-in-out infinite alternate;
     }
 
     .blob.b2 {
-      width: 44vw; height: 44vw;
-      right: -14vw; top: 4vh;
-      background: radial-gradient(circle at 60% 40%, rgba(124,58,237,.42), transparent 66%);
-      animation: drift2 34s ease-in-out infinite alternate;
+      width: 48vw; height: 48vw;
+      right: -16vw; bottom: -20vw;
+      background: radial-gradient(circle at 55% 45%, rgba(43,58,122,.26), transparent 65%);
+      animation: drift2 56s ease-in-out infinite alternate;
     }
 
-    .blob.b3 {
-      width: 40vw; height: 40vw;
-      left: 28vw; top: 58vh;
-      background: radial-gradient(circle at 50% 50%, rgba(34,211,238,.26), transparent 66%);
-      animation: drift3 42s ease-in-out infinite alternate;
-    }
+    @keyframes drift1 { to { transform: translate3d(10vw, 8vh, 0) scale(1.12); } }
+    @keyframes drift2 { to { transform: translate3d(-8vw, -12vh, 0) scale(1.08); } }
 
-    @keyframes drift1 { to { transform: translate3d(14vw, 10vh, 0) scale(1.15); } }
-    @keyframes drift2 { to { transform: translate3d(-10vw, 22vh, 0) scale(.9) rotate(30deg); } }
-    @keyframes drift3 { to { transform: translate3d(-16vw, -14vh, 0) scale(1.2); } }
-
-    /* ═══ NODE NETWORK CANVAS ═══ */
     #net {
       position: fixed; inset: 0; z-index: -1;
       pointer-events: none;
+      opacity: .75;
     }
 
-    /* ═══ CURSOR SPOTLIGHT ═══ */
-    #spot {
-      position: fixed; inset: 0; z-index: 940;
-      pointer-events: none;
-      mix-blend-mode: screen;
-      background: radial-gradient(420px 420px at var(--mx, -30%) var(--my, -30%), rgba(255,120,40,.12), transparent 70%);
-    }
-
-    /* film grain */
     body::after {
       content: '';
       position: fixed; inset: 0; z-index: 950;
@@ -105,10 +86,10 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
-    ::selection { background: var(--accent); color: #fff; }
+    ::selection { background: var(--shu); color: #fff; }
 
     :focus-visible {
-      outline: 2px solid var(--accent);
+      outline: 2px solid var(--shu);
       outline-offset: 3px;
     }
 
@@ -118,59 +99,43 @@
     .nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 1.2rem clamp(1.4rem, 4vw, 3.5rem);
-      background: linear-gradient(rgba(8,9,13,.75), transparent);
+      padding: 1.5rem clamp(1.4rem, 5vw, 4rem);
       pointer-events: none;
     }
 
     .nav > * { pointer-events: auto; }
 
-    .nav-mark {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 1.05rem;
-      letter-spacing: .02em;
+    .nav-name {
+      font-family: var(--font-min);
+      font-weight: 500;
+      font-size: .82rem;
+      letter-spacing: .3em;
+      color: var(--sub);
       text-decoration: none;
-      text-shadow: 0 0 24px rgba(255,77,0,.5);
+      transition: color .4s;
     }
 
-    .nav-mark i { font-style: normal; color: var(--accent); }
+    .nav-name:hover { color: var(--text); }
 
     .nav-menu {
-      display: flex; align-items: center; gap: 1.6rem;
+      display: flex; align-items: center; gap: 1.9rem;
       font-family: var(--font-mono);
-      font-size: .66rem;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      padding: .55rem 1.1rem;
-      border-radius: 999px;
-      background: rgba(255,255,255,.04);
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      font-size: .62rem;
+      letter-spacing: .16em;
+      color: var(--sub);
     }
 
     .nav-menu a {
-      color: var(--sub);
       text-decoration: none;
-      transition: color .25s, text-shadow .25s;
+      transition: color .4s;
     }
 
-    .nav-menu a:hover {
-      color: #fff;
-      text-shadow: 0 0 14px rgba(255,120,40,.9);
-    }
+    .nav-menu a:hover { color: var(--shu); }
 
-    .nav-status {
-      display: inline-flex; align-items: center; gap: .5rem;
-      color: var(--green);
-    }
-
-    .nav-status i {
-      width: 6px; height: 6px; border-radius: 50%;
+    .nav-menu .dot {
+      width: 5px; height: 5px; border-radius: 50%;
       background: var(--green);
-      box-shadow: 0 0 8px var(--green);
-      animation: pulse 2.4s ease-in-out infinite;
+      animation: pulse 3s ease-in-out infinite;
     }
 
     @keyframes pulse { 50% { opacity: .25; } }
@@ -179,586 +144,376 @@
     .hero {
       position: relative;
       min-height: 100svh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 0 clamp(1.4rem, 4vw, 3.5rem);
     }
 
-    .hero-kicker {
-      font-family: var(--font-mono);
-      font-size: .7rem;
-      letter-spacing: .22em;
-      color: var(--accent);
-      text-shadow: 0 0 18px rgba(255,77,0,.7);
-      margin-bottom: 1.6rem;
-    }
-
-    .hero h1 {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: clamp(2.6rem, 9.6vw, 8.2rem);
-      line-height: .95;
-      letter-spacing: -.015em;
-      text-transform: uppercase;
-      margin-left: -.05em;
-      white-space: nowrap;
-    }
-
-    .hero h1 b { font-weight: 800; }
-
-    .hero h1 .fill {
-      background: linear-gradient(110deg, #ffffff 20%, #ffc39e 38%, #ffffff 55%, #d9dce2 75%, #ffffff 90%);
-      background-size: 220% 100%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: sheen 7s ease-in-out infinite;
-      filter: drop-shadow(0 0 26px rgba(255,180,120,.22));
-    }
-
-    @keyframes sheen { 50% { background-position: 100% 0; } }
-
-    .hero h1 .outline {
-      color: transparent;
-      -webkit-text-stroke: 1.5px var(--accent);
-      filter: drop-shadow(0 0 20px rgba(255,77,0,.5));
-      animation: neonpulse 4.5s ease-in-out infinite;
-    }
-
-    @keyframes neonpulse {
-      50% { filter: drop-shadow(0 0 34px rgba(255,77,0,.85)); }
-    }
-
-    .hero-sub {
-      margin-top: 2.2rem;
-      font-family: var(--font-mono);
-      font-size: clamp(.72rem, 1.4vw, .85rem);
-      letter-spacing: .06em;
-      color: var(--sub);
-    }
-
-    .hero-sub b { color: var(--text); font-weight: 500; }
-
-    .hero-stats {
-      display: flex; flex-wrap: wrap;
-      margin-top: 3rem;
-      font-family: var(--font-mono);
-      font-size: .7rem;
-      color: var(--sub);
-      letter-spacing: .08em;
-    }
-
-    .hero-stats span {
-      padding: .2rem 1.4rem .2rem 0;
-      margin-right: 1.4rem;
-      border-right: 1px solid var(--hairline);
-    }
-
-    .hero-stats span:last-child { border-right: none; }
-
-    .hero-stats b {
-      display: block;
-      font-weight: 500;
-      font-size: 1.05rem;
-      color: var(--text);
-      letter-spacing: 0;
-      text-shadow: 0 0 20px rgba(255,120,40,.35);
-    }
-
-    .hero-name-ja {
+    .manifesto {
       position: absolute;
-      top: 50%; right: clamp(1.4rem, 4vw, 3.5rem);
+      top: 50%; right: clamp(14%, 22vw, 30%);
       transform: translateY(-50%);
       writing-mode: vertical-rl;
-      font-size: .95rem;
-      font-weight: 500;
-      letter-spacing: .55em;
-      color: var(--sub);
+      font-family: var(--font-min);
+      font-weight: 600;
+      font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+      letter-spacing: .26em;
+      line-height: 1.9;
+      color: var(--text);
     }
 
-    .hero-name-ja::before {
-      content: '';
-      display: block;
-      width: 8px; height: 8px;
-      background: var(--accent);
-      box-shadow: 0 0 12px var(--accent);
-      margin-bottom: 1.2rem;
+    .js .manifesto {
+      clip-path: inset(0 0 100% 0);
+      animation: unveil 1.8s cubic-bezier(.2,.8,.2,1) .4s forwards;
     }
 
-    .hero-scroll {
+    @keyframes unveil { to { clip-path: inset(0 0 -8% 0); } }
+
+    .manifesto em {
+      font-style: normal;
+      color: var(--shu);
+    }
+
+    .hero-id {
       position: absolute;
-      bottom: 2.2rem; left: clamp(1.4rem, 4vw, 3.5rem);
-      display: flex; align-items: center; gap: .8rem;
+      left: clamp(1.4rem, 5vw, 4rem);
+      bottom: clamp(2.2rem, 7vh, 4.5rem);
       font-family: var(--font-mono);
-      font-size: .62rem;
-      letter-spacing: .3em;
+      font-size: .64rem;
+      letter-spacing: .14em;
       color: var(--sub);
+      line-height: 2.1;
     }
 
-    .hero-scroll::after {
-      content: '';
-      width: 56px; height: 1px;
-      background: linear-gradient(90deg, var(--accent), transparent);
-      animation: scrollhint 2.2s ease-in-out infinite;
-      transform-origin: left;
+    .hero-id .jp {
+      font-family: var(--font-min);
+      font-size: .92rem;
+      letter-spacing: .34em;
+      color: var(--text);
     }
 
-    @keyframes scrollhint { 50% { transform: scaleX(.35); } }
-
-    /* hero load animation */
-    .line-wrap { overflow: hidden; display: block; }
-    .line-inner { display: block; }
-
-    .js .line-inner {
-      transform: translateY(112%);
-      animation: riseup .8s cubic-bezier(.16,1,.3,1) forwards;
-    }
-
-    .js .d1 .line-inner { animation-delay: .08s; }
-    .js .d2 .line-inner { animation-delay: .18s; }
-
-    @keyframes riseup { to { transform: translateY(0); } }
-
-    .js .fade-in {
+    .js .fade-slow {
       opacity: 0;
-      animation: fadein .9s ease .65s forwards;
+      animation: fadein 1.6s ease 1.4s forwards;
     }
 
     @keyframes fadein { to { opacity: 1; } }
 
-    /* ═══ SECTIONS COMMON ═══ */
-    section {
-      padding: clamp(5rem, 11vw, 9rem) clamp(1.4rem, 4vw, 3.5rem);
-      max-width: 1240px;
+    .hero-scroll {
+      position: absolute;
+      bottom: 0; right: clamp(1.4rem, 5vw, 4rem);
+      width: 1px; height: 84px;
+      background: linear-gradient(var(--sub), transparent);
+      overflow: hidden;
+    }
+
+    .hero-scroll::after {
+      content: '';
+      position: absolute; left: 0; top: -40%;
+      width: 1px; height: 40%;
+      background: var(--shu);
+      animation: dripline 2.6s cubic-bezier(.4,0,.2,1) infinite;
+    }
+
+    @keyframes dripline { to { top: 110%; } }
+
+    /* ═══ LAYOUT ═══ */
+    main {
+      max-width: 880px;
       margin: 0 auto;
-      scroll-margin-top: 3rem;
-      position: relative;
+      padding: 0 clamp(1.4rem, 5vw, 3rem);
     }
 
-    .sec-head {
-      display: flex; align-items: baseline; gap: 1.6rem;
-      margin-bottom: clamp(2.6rem, 6vw, 4.5rem);
+    section {
+      padding: clamp(4.5rem, 10vw, 7.5rem) 0;
+      scroll-margin-top: 4.5rem;
     }
 
-    .sec-head h2 {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: clamp(2.2rem, 6vw, 4.2rem);
-      line-height: 1;
-      text-transform: uppercase;
-      letter-spacing: -.01em;
+    .sec-label {
+      display: flex; align-items: baseline; gap: 1.1rem;
+      margin-bottom: clamp(2.4rem, 5vw, 3.6rem);
     }
 
-    .sec-head h2 .outline {
-      color: transparent;
-      -webkit-text-stroke: 1.2px var(--accent);
-      filter: drop-shadow(0 0 16px rgba(255,77,0,.4));
-    }
-
-    .sec-head .sec-no {
+    .sec-label .no {
       font-family: var(--font-mono);
-      font-size: .7rem;
+      font-size: .64rem;
       letter-spacing: .2em;
-      color: var(--accent);
-      text-shadow: 0 0 14px rgba(255,77,0,.7);
+      color: var(--gold);
+    }
+
+    .sec-label h2 {
+      font-family: var(--font-min);
+      font-weight: 600;
+      font-size: 1.35rem;
+      letter-spacing: .3em;
+    }
+
+    .sec-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--hairline);
+      align-self: center;
     }
 
     .js .reveal {
       opacity: 0;
-      transform: translateY(22px);
-      transition: opacity .8s ease, transform .8s cubic-bezier(.16,1,.3,1);
+      filter: blur(6px);
+      transform: translateY(14px);
+      transition: opacity 1s ease, filter 1s ease, transform 1s cubic-bezier(.2,.8,.2,1);
     }
 
-    .js .reveal.in { opacity: 1; transform: none; }
+    .js .reveal.in { opacity: 1; filter: none; transform: none; }
 
-    /* ═══ GLASS PANELS ═══ */
-    .glass {
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: 18px;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      position: relative;
-      overflow: hidden;
-    }
+    /* ═══ INTRO ═══ */
+    .intro { padding-top: clamp(3rem, 7vw, 5rem); }
 
-    .glass::before {
-      content: '';
-      position: absolute; inset: 0;
-      border-radius: inherit;
-      background: radial-gradient(320px 320px at var(--gx, 50%) var(--gy, -60%), rgba(255,255,255,.09), transparent 70%);
-      pointer-events: none;
-      transition: opacity .3s;
-    }
-
-    /* ═══ ABOUT ═══ */
-    .about-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-      gap: clamp(2rem, 5vw, 5rem);
-      align-items: start;
-    }
-
-    .about-lead {
-      font-size: clamp(1rem, 1.8vw, 1.2rem);
+    .intro p {
+      font-family: var(--font-min);
       font-weight: 500;
-      line-height: 2.1;
+      font-size: clamp(.95rem, 1.9vw, 1.14rem);
+      line-height: 2.5;
+      letter-spacing: .06em;
+      max-width: 40em;
     }
 
-    .about-lead em {
-      font-style: normal;
-      color: var(--accent);
-      text-shadow: 0 0 16px rgba(255,77,0,.55);
-    }
-
-    .spec {
+    .intro .tools {
+      margin-top: 2.4rem;
       font-family: var(--font-mono);
-      font-size: .74rem;
-      line-height: 1.7;
-      padding: 1.4rem 1.6rem;
-      will-change: transform;
-    }
-
-    .spec > div {
-      display: grid;
-      grid-template-columns: 128px 1fr;
-      gap: 1rem;
-      padding: .75rem 0;
-      border-bottom: 1px solid var(--hairline);
-    }
-
-    .spec > div:last-child { border-bottom: none; }
-
-    .spec dt {
-      color: var(--sub);
-      letter-spacing: .1em;
-      text-transform: uppercase;
       font-size: .64rem;
-      padding-top: .15em;
+      letter-spacing: .1em;
+      color: var(--sub);
     }
 
-    .spec dd { color: var(--text); }
-
-    /* ═══ CAREER / THE LINE ═══ */
-    .career-body {
+    /* ═══ CAREER ═══ */
+    .career-list {
       position: relative;
-      padding-left: calc(var(--rail) + 80px);
+      padding-left: clamp(1.2rem, 3vw, 2rem);
     }
 
-    .spine {
+    .qline {
       position: absolute;
-      top: 0; bottom: 0;
-      left: var(--rail);
-      width: 2px;
+      left: 0; top: 0; bottom: 0;
+      width: 1px;
       background: var(--hairline);
     }
 
-    .spine-fill {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(var(--accent), #ff8a4d);
-      box-shadow: 0 0 18px rgba(255,77,0,.7);
+    .qline i {
+      position: absolute; inset: 0;
+      background: rgba(213,82,46,.55);
       transform-origin: top;
       transform: scaleY(0);
     }
 
-    .spine-tip {
-      position: absolute;
-      left: calc(var(--rail) - 4px);
-      top: 0;
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 0 16px 4px rgba(255,120,40,.9);
-      opacity: 0;
+    .row {
+      display: grid;
+      grid-template-columns: 118px 1fr;
+      gap: 1.6rem;
+      padding: 1.4rem 0;
+      border-bottom: 1px solid var(--hairline);
     }
 
-    .spine-origin {
-      position: absolute;
-      top: -34px;
-      left: calc(var(--rail) - 74px);
+    .row:last-child { border-bottom: none; }
+
+    .row .year {
       font-family: var(--font-mono);
-      font-size: .62rem;
-      letter-spacing: .2em;
+      font-size: .68rem;
+      letter-spacing: .06em;
       color: var(--sub);
+      padding-top: .5em;
     }
 
-    .job {
-      position: relative;
-      padding-bottom: clamp(3.2rem, 7vw, 5.5rem);
+    .row h3 {
+      font-family: var(--font-min);
+      font-weight: 600;
+      font-size: 1.08rem;
+      letter-spacing: .1em;
+      display: flex; align-items: baseline; gap: .7rem;
     }
 
-    .job:last-child { padding-bottom: 1rem; }
-
-    .job::before {
-      content: '';
-      position: absolute;
-      left: calc(-80px - 6px);
-      top: .5rem;
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: 2px solid var(--sub);
-      z-index: 1;
-    }
-
-    .job.live::before {
-      border-color: var(--accent);
-      background: var(--accent);
-      box-shadow: 0 0 14px rgba(255,77,0,.9);
-    }
-
-    .job.live .ring {
-      position: absolute;
-      left: calc(-80px - 6px);
-      top: .5rem;
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
-      animation: ring 2.6s cubic-bezier(0,0,.2,1) infinite;
-    }
-
-    @keyframes ring {
-      0% { transform: scale(1); opacity: .9; }
-      80%, 100% { transform: scale(2.6); opacity: 0; }
-    }
-
-    .job-year {
-      position: absolute;
-      left: calc(-80px - var(--rail));
-      top: .35rem;
-      width: calc(var(--rail) - 24px);
-      text-align: right;
-      font-family: var(--font-mono);
-      font-size: .72rem;
-      color: var(--sub);
-      letter-spacing: .04em;
-    }
-
-    .job.live .job-year { color: var(--accent); text-shadow: 0 0 12px rgba(255,77,0,.6); }
-
-    .job h3 {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: clamp(1.25rem, 2.6vw, 1.7rem);
-      line-height: 1.25;
-      letter-spacing: .01em;
-    }
-
-    .job h3 small {
-      display: block;
+    .row h3 .role {
       font-family: var(--font-mono);
       font-weight: 400;
-      font-size: .68rem;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--sub);
-      margin-top: .35rem;
-    }
-
-    .job.live h3 small { color: var(--accent); }
-
-    .job p {
-      margin-top: 1rem;
-      max-width: 640px;
-      font-size: .88rem;
+      font-size: .6rem;
+      letter-spacing: .16em;
       color: var(--sub);
     }
 
-    .job .stack {
-      margin-top: 1rem;
-      font-family: var(--font-mono);
-      font-size: .68rem;
-      letter-spacing: .04em;
-      color: var(--text);
-      opacity: .75;
+    .row.live h3::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--shu);
+      align-self: center;
+      flex-shrink: 0;
     }
 
-    /* ═══ WORKS ═══ */
-    .works-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(296px, 1fr));
-      gap: 16px;
-      perspective: 1200px;
+    .row .sum {
+      font-size: .8rem;
+      color: var(--sub);
+      margin-top: .3rem;
+      line-height: 1.9;
     }
 
-    .work {
+    /* ═══ MAKING ═══ */
+    .feature {
       display: flex;
-      flex-direction: column;
-      padding: 1.9rem 1.7rem 1.8rem;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--hairline);
       text-decoration: none;
-      transition: border-color .3s, box-shadow .3s;
-      transform-style: preserve-3d;
-      will-change: transform;
+      transition: padding-left .5s cubic-bezier(.2,.8,.2,1);
     }
 
-    .work:hover {
-      border-color: rgba(255,77,0,.5);
-      box-shadow: 0 18px 46px rgba(0,0,0,.5), 0 0 30px rgba(255,77,0,.16);
+    .feature:hover { padding-left: .8rem; }
+
+    .feature img {
+      width: 52px; height: 52px;
+      border-radius: 12px;
+      filter: grayscale(.55) contrast(.95);
+      opacity: .9;
+      transition: filter .5s, opacity .5s;
+      flex-shrink: 0;
     }
 
-    .work-top {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1.3rem;
+    .feature:hover img { filter: none; opacity: 1; }
+
+    .feature .f-body { flex: 1; min-width: 0; }
+
+    .feature h3 {
+      font-family: var(--font-min);
+      font-weight: 600;
+      font-size: 1.05rem;
+      letter-spacing: .12em;
+      transition: color .4s;
     }
 
-    .work img {
-      width: 46px; height: 46px;
-      border-radius: 10px;
-      filter: grayscale(1) contrast(.9);
-      opacity: .85;
-      transition: filter .35s ease, opacity .35s ease, transform .35s ease;
-    }
+    .feature:hover h3 { color: var(--shu); }
 
-    .work:hover img {
-      filter: none;
-      opacity: 1;
-      transform: translateY(-2px) scale(1.06);
-    }
-
-    .work-arrow {
-      font-family: var(--font-mono);
-      color: var(--sub);
-      font-size: .95rem;
-      transition: color .3s, transform .3s cubic-bezier(.16,1,.3,1), text-shadow .3s;
-    }
-
-    .work:hover .work-arrow {
-      color: var(--accent);
-      text-shadow: 0 0 12px rgba(255,77,0,.8);
-      transform: translate(3px, -3px);
-    }
-
-    .work h3 {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 1.08rem;
-      letter-spacing: .01em;
-      transition: color .3s;
-    }
-
-    .work:hover h3 { color: var(--accent); }
-
-    .work p {
-      margin-top: .6rem;
+    .feature .f-desc {
       font-size: .78rem;
       color: var(--sub);
-      flex: 1;
+      margin-top: .15rem;
     }
 
-    .work .meta {
-      margin-top: 1.4rem;
+    .feature .f-meta {
       font-family: var(--font-mono);
-      font-size: .62rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
+      font-size: .6rem;
+      letter-spacing: .14em;
       color: var(--sub);
+      white-space: nowrap;
     }
 
-    .work .meta b {
-      font-weight: 400;
+    .feature .f-meta::after {
+      content: ' ↗';
+      color: var(--shu);
+    }
+
+    .others {
+      margin-top: 2.2rem;
+    }
+
+    .others .o-label {
+      font-family: var(--font-mono);
+      font-size: .6rem;
+      letter-spacing: .2em;
+      color: var(--gold);
+      margin-bottom: .9rem;
+    }
+
+    .others a {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      padding: .45rem 0;
+      font-size: .8rem;
+      text-decoration: none;
+      color: var(--sub);
+      transition: color .4s;
+    }
+
+    .others a:hover { color: var(--text); }
+
+    .others a b {
+      font-family: var(--font-min);
+      font-weight: 500;
+      font-size: .88rem;
+      letter-spacing: .1em;
       color: var(--text);
-      opacity: .8;
+      white-space: nowrap;
+      transition: color .4s;
+    }
+
+    .others a:hover b { color: var(--shu); }
+
+    .others a::after {
+      content: '↗';
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: .7rem;
     }
 
     /* ═══ LINKS ═══ */
     .links-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 0 3.4rem;
-      row-gap: 1.6rem;
+      gap: 1.2rem 2.8rem;
+      font-family: var(--font-mono);
+      font-size: .72rem;
+      letter-spacing: .12em;
     }
 
     .links-row a {
-      font-family: var(--font-mono);
-      font-size: clamp(.85rem, 1.8vw, 1.05rem);
-      letter-spacing: .12em;
-      text-transform: uppercase;
       text-decoration: none;
-      color: var(--text);
-      position: relative;
-      padding-bottom: .35rem;
-      transition: color .3s, text-shadow .3s;
-    }
-
-    .links-row a small {
-      display: block;
-      font-size: .6rem;
-      letter-spacing: .14em;
       color: var(--sub);
-      margin-bottom: .3rem;
+      position: relative;
+      padding-bottom: .3rem;
+      transition: color .4s;
     }
 
     .links-row a::after {
       content: '';
       position: absolute; left: 0; bottom: 0;
       width: 100%; height: 1px;
-      background: var(--accent);
-      box-shadow: 0 0 10px rgba(255,77,0,.9);
+      background: var(--shu);
       transform: scaleX(0);
       transform-origin: right;
-      transition: transform .35s cubic-bezier(.16,1,.3,1);
+      transition: transform .45s cubic-bezier(.2,.8,.2,1);
     }
 
+    .links-row a:hover { color: var(--text); }
     .links-row a:hover::after { transform: scaleX(1); transform-origin: left; }
-
-    .links-row a:hover {
-      color: var(--accent);
-      text-shadow: 0 0 18px rgba(255,77,0,.6);
-    }
 
     /* ═══ FOOTER ═══ */
     footer {
-      padding: clamp(5rem, 10vw, 8rem) clamp(1.4rem, 4vw, 3.5rem) 3rem;
-      max-width: 1240px;
+      max-width: 880px;
       margin: 0 auto;
+      padding: clamp(4rem, 9vw, 7rem) clamp(1.4rem, 5vw, 3rem) 2.6rem;
+      text-align: center;
     }
 
-    footer .foot-display {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: clamp(2.6rem, 9vw, 7rem);
-      line-height: .98;
-      text-transform: uppercase;
-      letter-spacing: -.01em;
+    footer .kir {
+      font-family: var(--font-serif-latin);
+      font-style: italic;
+      font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+      color: var(--shu);
+      letter-spacing: .02em;
     }
 
-    footer .foot-display .outline {
-      color: transparent;
-      -webkit-text-stroke: 1.5px var(--accent);
-      filter: drop-shadow(0 0 22px rgba(255,77,0,.5));
-      animation: neonpulse 4.5s ease-in-out infinite;
-    }
-
-    .foot-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .6rem 2rem;
-      align-items: center;
-      margin-top: 3.2rem;
-      padding-top: 1.6rem;
-      border-top: 1px solid var(--hairline);
+    footer .foot-meta {
+      margin-top: 2.6rem;
       font-family: var(--font-mono);
-      font-size: .66rem;
-      letter-spacing: .1em;
+      font-size: .6rem;
+      letter-spacing: .16em;
       color: var(--sub);
+      line-height: 2.4;
     }
 
-    .foot-meta .ok {
-      display: inline-flex; align-items: center; gap: .5rem;
-      color: var(--green);
+    footer .foot-meta a {
+      color: var(--sub);
+      text-decoration: none;
+      transition: color .4s;
     }
 
-    .foot-meta .ok i {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 8px var(--green);
-      animation: pulse 2.4s ease-in-out infinite;
-    }
-
-    .foot-meta a { color: var(--sub); text-decoration: none; }
-    .foot-meta a:hover { color: var(--accent); }
+    footer .foot-meta a:hover { color: var(--shu); }
 
     /* ═══ REDUCED MOTION ═══ */
     @media (prefers-reduced-motion: reduce) {
@@ -768,219 +523,169 @@
         animation-delay: 0s !important;
         transition-duration: .01ms !important;
       }
-      .js .line-inner { transform: none; animation: none; }
-      .js .fade-in { opacity: 1; animation: none; }
-      .js .reveal { opacity: 1; transform: none; }
-      .spine-fill { transform: scaleY(1) !important; }
-      .spine-tip, #net, #spot { display: none; }
-      .hero h1 .fill {
-        animation: none;
-        background: none;
-        -webkit-background-clip: initial;
-        background-clip: initial;
-        color: var(--text);
-      }
+      .js .manifesto { clip-path: none; animation: none; }
+      .js .fade-slow { opacity: 1; animation: none; }
+      .js .reveal { opacity: 1; filter: none; transform: none; }
+      .qline i { transform: scaleY(1) !important; }
+      #net, .hero-scroll { display: none; }
     }
 
     /* ═══ RESPONSIVE ═══ */
-    @media (max-width: 900px) {
-      .hero-name-ja { display: none; }
-      .nav-menu a:not(.nav-status) { display: none; }
-      .nav-menu { gap: 0; }
-      .about-grid { grid-template-columns: 1fr; }
-      :root { --rail: 14px; }
-      .career-body { padding-left: 46px; }
-      .spine-origin { left: 0; top: -30px; }
-      .spine-tip { left: calc(var(--rail) - 4px); }
-      .job-year {
-        position: static;
-        display: block;
-        width: auto;
-        text-align: left;
-        margin-bottom: .5rem;
-      }
-      .job::before, .job.live .ring { left: -38px; }
-      .blob { filter: blur(60px); }
+    @media (max-width: 700px) {
+      .nav-menu a { display: none; }
+      .manifesto { right: 16%; }
+      .row { grid-template-columns: 1fr; gap: .2rem; }
+      .row .year { padding-top: 0; }
+      .feature .f-meta { display: none; }
+      .others a { flex-wrap: wrap; }
     }
   </style>
 </head>
 <body>
 
-<!-- ═══ AMBIENT LAYERS ═══ -->
+<!-- ═══ AMBIENT ═══ -->
 <div class="aurora" aria-hidden="true">
   <div class="blob b1"></div>
   <div class="blob b2"></div>
-  <div class="blob b3"></div>
 </div>
 <canvas id="net" aria-hidden="true"></canvas>
-<div id="spot" aria-hidden="true"></div>
 
 <!-- ═══ NAV ═══ -->
 <nav class="nav">
-  <a class="nav-mark" href="#">AO<i>.</i></a>
+  <a class="nav-name" href="#">大嶋淳司</a>
   <div class="nav-menu">
-    <a href="#about">About</a>
-    <a href="#career">Career</a>
-    <a href="#works">Works</a>
-    <a href="#links">Links</a>
-    <span class="nav-status"><i></i>operational</span>
+    <a href="#work">01 仕事</a>
+    <a href="#making">02 制作</a>
+    <a href="#contact">03 つながり</a>
+    <span class="dot" title="operational"></span>
   </div>
 </nav>
 
 <!-- ═══ HERO ═══ -->
 <header class="hero">
-  <p class="hero-kicker fade-in">SITE RELIABILITY ENGINEER — SINCE 2015</p>
-  <h1>
-    <span class="line-wrap d1"><span class="line-inner"><b class="fill">ATSUSHI</b></span></span>
-    <span class="line-wrap d2"><span class="line-inner"><b class="outline">OSHIMA</b></span></span>
-  </h1>
-  <p class="hero-sub fade-in"><b>大嶋 淳司</b> — Cloud Infrastructure / SRE · AWS · Odawara, JP</p>
-  <div class="hero-stats fade-in">
-    <span><b>10+</b>years on-call</span>
-    <span><b>7</b>apps shipped</span>
-    <span><b>99.99%</b>uptime mindset</span>
+  <p class="manifesto">止めない、<em>を</em>仕事に。</p>
+  <div class="hero-id fade-slow">
+    <span class="jp">大嶋 淳司</span><br>
+    SRE / SITE RELIABILITY ENGINEER<br>
+    AWS · SWIFT — ODAWARA, JAPAN
   </div>
-  <span class="hero-name-ja fade-in" aria-hidden="true">大嶋淳司</span>
-  <span class="hero-scroll fade-in" aria-hidden="true">SCROLL</span>
+  <span class="hero-scroll" aria-hidden="true"></span>
 </header>
 
 <main>
 
-  <!-- ═══ ABOUT ═══ -->
-  <section id="about">
-    <div class="sec-head reveal">
-      <span class="sec-no">01</span>
-      <h2>About</h2>
+  <!-- ═══ INTRO ═══ -->
+  <section class="intro">
+    <p class="reveal">クラウドの上で、サービスが息をし続けるための仕組みをつくっています。昼は AWS のインフラを設計し、監視し、守る SRE。夜は SwiftUI で、くすっと笑える iOS アプリをつくる個人開発者。神奈川・小田原から。</p>
+    <p class="tools reveal">AWS · TERRAFORM · DATADOG · NEW RELIC · GITHUB ACTIONS · SWIFT · SWIFTUI</p>
+  </section>
+
+  <!-- ═══ WORK ═══ -->
+  <section id="work">
+    <div class="sec-label reveal">
+      <span class="no">01</span>
+      <h2>仕事</h2>
     </div>
-    <div class="about-grid">
-      <p class="about-lead reveal">大学卒業後、受託でのインフラ設計・構築を経験。その後、事業会社でSREとしてAWSを中心にインフラ運用・監視設計・CI/CD・コスト最適化・予算管理。<em>止めないこと</em>を仕事にしながら、夜は SwiftUI で遊び心のある iOS アプリを作って出荷している。</p>
-      <dl class="spec glass reveal tilt">
-        <div><dt>Cloud</dt><dd>AWS</dd></div>
-        <div><dt>Region</dt><dd>ap-northeast-1.1 (Odawara)</dd></div>
-        <div><dt>Observability</dt><dd>Datadog / New Relic / CloudWatch</dd></div>
-        <div><dt>DevOps</dt><dd>Terraform / GitHub Actions / CircleCI / ecspresso</dd></div>
-        <div><dt>Development</dt><dd>Swift / SwiftUI / iOS</dd></div>
-        <div><dt>Management</dt><dd>予算管理 / コスト最適化</dd></div>
-      </dl>
+    <div class="career-list">
+      <span class="qline" aria-hidden="true"><i id="qlineFill"></i></span>
+
+      <div class="row live reveal">
+        <span class="year">2023 —</span>
+        <div>
+          <h3>Showcase Gig<span class="role">SRE</span></h3>
+          <p class="sum">Terraform によるインフラのコード化、Datadog の監視基盤、コスト最適化と予算管理。</p>
+        </div>
+      </div>
+
+      <div class="row live reveal">
+        <span class="year">2024 —</span>
+        <div>
+          <h3>NEL<span class="role">SRE / 副業</span></h3>
+          <p class="sum">Heroku + GCP から AWS への全面移行を、ひとりで設計して完遂。</p>
+        </div>
+      </div>
+
+      <div class="row reveal">
+        <span class="year">2020 — 23</span>
+        <div>
+          <h3>Hamee / NE<span class="role">SRE</span></h3>
+          <p class="sum">ecspresso によるデプロイ基盤と Observability 強化。PHP カンファレンス 2021 登壇。</p>
+        </div>
+      </div>
+
+      <div class="row reveal">
+        <span class="year">2018 — 20</span>
+        <div>
+          <h3>ZOZOテクノロジーズ<span class="role">SRE</span></h3>
+          <p class="sum">ZOZO SUITE ほか、大規模トラフィックを支えるインフラの設計・構築。</p>
+        </div>
+      </div>
+
+      <div class="row reveal">
+        <span class="year">2015 — 18</span>
+        <div>
+          <h3>シンクスクエア<span class="role">INFRA</span></h3>
+          <p class="sum">受託のオンプレミス設計・構築から出発。新卒教育にも携わる。</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- ═══ CAREER ═══ -->
-  <section id="career">
-    <div class="sec-head reveal">
-      <span class="sec-no">02</span>
-      <h2>Care<span class="outline">er</span></h2>
+  <!-- ═══ MAKING ═══ -->
+  <section id="making">
+    <div class="sec-label reveal">
+      <span class="no">02</span>
+      <h2>制作</h2>
     </div>
 
-    <div class="career-body" id="careerBody">
-      <span class="spine-origin">EST. 2015 —</span>
-      <div class="spine" aria-hidden="true"><span class="spine-fill" id="spineFill"></span></div>
-      <span class="spine-tip" id="spineTip" aria-hidden="true"></span>
-
-      <article class="job live reveal">
-        <span class="ring" aria-hidden="true"></span>
-        <span class="job-year">2023/7 —<br>NOW</span>
-        <h3>Showcase Gig<small>SRE</small></h3>
-        <p>AWSインフラの設計・運用・自動化を担当。Terraformによるインフラのコード化、Datadogを用いた監視基盤構築、セキュアなアクセス制御設計を推進。予算管理・コスト最適化も担当。</p>
-        <div class="stack">AWS · EKS · Terraform · Athena · Glue · Datadog · GitHub Actions · Organizations</div>
-      </article>
-
-      <article class="job live reveal">
-        <span class="ring" aria-hidden="true"></span>
-        <span class="job-year">2024/3 —<br>NOW</span>
-        <h3>NEL<small>SRE / Infra — 副業</small></h3>
-        <p>広告プラットフォームのインフラ運用に副業として参画。Heroku+GCPからAWSへの全面移行を一人で担当、AWS Organizations/SSO設計、コーポレートサイトリニューアル（Lightsail+CloudFront）など幅広く推進。</p>
-        <div class="stack">AWS · ECS/Fargate · Aurora MySQL · Terraform · CloudFront · Bedrock · Lambda · Go · Lightsail</div>
-      </article>
-
-      <article class="job reveal">
-        <span class="job-year">2020/6 —<br>2023/6</span>
-        <h3>Hamee / NE<small>SRE</small></h3>
-        <p>AWS移行フェーズから参画。主にCICDを担当しecspressoによるデプロイフロー構築、CircleCIからGitHub Actionsへの移行、New Relic導入によるObservability強化を実施。コスト最適化のやりがいに目覚める。PHPカンファレンス2021にも登壇。</p>
-        <div class="stack">AWS · ECS/Fargate · ecspresso · Aurora MySQL · New Relic · GitHub Actions · CircleCI</div>
-      </article>
-
-      <article class="job reveal">
-        <span class="job-year">2018/4 —<br>2020/5</span>
-        <h3>ZOZO Technologies<small>SRE</small></h3>
-        <p>ZOZO Global、ZOZO SUITE、ZOZO MATプロジェクトにてインフラ構築を担当。ECS on EC2基盤の設計・構築、CI/CDパイプライン整備を担当。大規模トラフィックに耐えるスケーラブルなインフラを実現。</p>
-        <div class="stack">AWS · EKS · ECS on EC2 · Lambda · CircleCI · Datadog · Athena · Glue</div>
-      </article>
-
-      <article class="job reveal">
-        <span class="job-year">2015/4 —<br>2018/3</span>
-        <h3>Think Square<small>Infrastructure Engineer</small></h3>
-        <p>受託案件として多数のオンプレミス・VM環境のインフラ設計・構築を担当。新卒採用、新卒教育にも携わる。</p>
-        <div class="stack">AWS · Linux · Networking · オンプレミス</div>
-      </article>
-    </div>
-  </section>
-
-  <!-- ═══ WORKS ═══ -->
-  <section id="works">
-    <div class="sec-head reveal">
-      <span class="sec-no">03</span>
-      <h2>Wor<span class="outline">ks</span></h2>
-    </div>
-
-    <div class="works-grid">
-      <a class="work glass tilt reveal" href="https://apps.apple.com/app/id6762557442" target="_blank" rel="noopener noreferrer">
-        <div class="work-top"><img src="assets/icon_fire-idle.png" alt=""><span class="work-arrow">↗</span></div>
+    <a class="feature reveal" href="https://apps.apple.com/app/id6762557442" target="_blank" rel="noopener noreferrer">
+      <img src="assets/icon_fire-idle.png" alt="">
+      <span class="f-body">
         <h3>FIREへの道</h3>
-        <p>タップと放置でコツコツ資産を増やし、1億円（FIRE）達成を目指すピクセルアート風の放置ゲーム。転生システムによる永続バフとオフライン報酬を備える。</p>
-        <span class="meta"><b>Swift / SwiftUI</b> — App Store</span>
-      </a>
-      <a class="work glass tilt reveal" href="https://apps.apple.com/app/id6759728900" target="_blank" rel="noopener noreferrer">
-        <div class="work-top"><img src="assets/icon_dorodango.png" alt=""><span class="work-arrow">↗</span></div>
-        <h3>どろだんご育成</h3>
-        <p>どろだんごを毎日磨いて育てるiOS放置育成ゲーム。放置すると劣化し、最終的に割れてしまう。SwiftUIとObservationフレームワークで構築。</p>
-        <span class="meta"><b>Swift / SwiftUI</b> — App Store</span>
-      </a>
-      <a class="work glass tilt reveal" href="https://apps.apple.com/app/id6759950033" target="_blank" rel="noopener noreferrer">
-        <div class="work-top"><img src="assets/icon_1m-clean.png" alt=""><span class="work-arrow">↗</span></div>
-        <h3>1分掃除ガチャ</h3>
-        <p>1分間の掃除タイマーアプリ。短い時間で掃除習慣を身につけるためのシンプルなiOSアプリ。</p>
-        <span class="meta"><b>Swift / SwiftUI</b> — App Store</span>
-      </a>
-      <a class="work glass tilt reveal" href="https://apps.apple.com/app/id6760191220" target="_blank" rel="noopener noreferrer">
-        <div class="work-top"><img src="assets/icon_garlic-breath-meter.png" alt=""><span class="work-arrow">↗</span></div>
-        <h3>にんにく臭</h3>
-        <p>にんにく臭いメーター。にんにくを食べた後の息のにおいレベルを時間経過で可視化するiOSアプリ。</p>
-        <span class="meta"><b>Swift / SwiftUI</b> — App Store</span>
-      </a>
-      <a class="work glass tilt reveal" href="https://apps.apple.com/app/id6760414260" target="_blank" rel="noopener noreferrer">
-        <div class="work-top"><img src="assets/icon_shotlix.png" alt=""><span class="work-arrow">↗</span></div>
-        <h3>Shotlix</h3>
-        <p>スクリーンショットや写真をSNS投稿向けに整える画像編集アプリ。アスペクト比や背景、装飾やテキストを簡単に調整できる。</p>
-        <span class="meta"><b>Swift / SwiftUI</b> — App Store</span>
-      </a>
-      <a class="work glass tilt reveal" href="https://apps.apple.com/app/id6760126826" target="_blank" rel="noopener noreferrer">
-        <div class="work-top"><img src="assets/icon_station-mission.png" alt=""><span class="work-arrow">↗</span></div>
+        <span class="f-desc">1億円を目指す、ピクセルアートの放置ゲーム。</span>
+      </span>
+      <span class="f-meta">APP STORE</span>
+    </a>
+
+    <a class="feature reveal" href="https://apps.apple.com/app/id6760126826" target="_blank" rel="noopener noreferrer">
+      <img src="assets/icon_station-mission.png" alt="">
+      <span class="f-body">
         <h3>駅ミッション</h3>
-        <p>日本全国の駅を訪れてコレクションする位置情報ゲーム。ミッションカードの駅に到着すると記録される。</p>
-        <span class="meta"><b>Swift / SwiftUI</b> — App Store</span>
-      </a>
-      <a class="work glass tilt reveal" href="https://official-site.katteni.workers.dev/" target="_blank" rel="noopener noreferrer">
-        <div class="work-top"><img src="assets/icon_katteni.svg" alt=""><span class="work-arrow">↗</span></div>
+        <span class="f-desc">日本全国の駅を集めてまわる、位置情報ゲーム。</span>
+      </span>
+      <span class="f-meta">APP STORE</span>
+    </a>
+
+    <a class="feature reveal" href="https://official-site.katteni.workers.dev/" target="_blank" rel="noopener noreferrer">
+      <img src="assets/icon_katteni.svg" alt="">
+      <span class="f-body">
         <h3>勝手に公式サイト</h3>
-        <p>「良い店なのに公式サイトがない。だから、勝手に作る。」公式サイトを持たない地元の優良店舗を紹介する非公式ポータルサイト。</p>
-        <span class="meta"><b>Next.js / Cloudflare</b> — Web</span>
-      </a>
+        <span class="f-desc">公式サイトのない良い店を、勝手に紹介するポータル。</span>
+      </span>
+      <span class="f-meta">WEB</span>
+    </a>
+
+    <div class="others reveal">
+      <p class="o-label">ほかにも</p>
+      <a href="https://apps.apple.com/app/id6759728900" target="_blank" rel="noopener noreferrer"><b>どろだんご育成</b>磨いて育てる放置ゲーム</a>
+      <a href="https://apps.apple.com/app/id6759950033" target="_blank" rel="noopener noreferrer"><b>1分掃除ガチャ</b>1分だけ掃除するタイマー</a>
+      <a href="https://apps.apple.com/app/id6760191220" target="_blank" rel="noopener noreferrer"><b>にんにく臭</b>息のにおいレベルを可視化</a>
+      <a href="https://apps.apple.com/app/id6760414260" target="_blank" rel="noopener noreferrer"><b>Shotlix</b>スクリーンショットを SNS 向けに整える</a>
     </div>
   </section>
 
-  <!-- ═══ LINKS ═══ -->
-  <section id="links">
-    <div class="sec-head reveal">
-      <span class="sec-no">04</span>
-      <h2>Lin<span class="outline">ks</span></h2>
+  <!-- ═══ CONTACT ═══ -->
+  <section id="contact">
+    <div class="sec-label reveal">
+      <span class="no">03</span>
+      <h2>つながり</h2>
     </div>
     <div class="links-row reveal">
-      <a href="https://github.com/atsusics" target="_blank" rel="noopener"><small>code</small>GitHub</a>
-      <a href="https://qiita.com/atsusics" target="_blank" rel="noopener"><small>writing</small>Qiita</a>
-      <a href="https://x.com/atsusics" target="_blank" rel="noopener"><small>main</small>X @atsusics</a>
-      <a href="https://x.com/atsusics_dev" target="_blank" rel="noopener"><small>dev log</small>X @atsusics_dev</a>
-      <a href="https://youtrust.jp/users/atsusics" target="_blank" rel="noopener"><small>career</small>YOUTRUST</a>
+      <a href="https://github.com/atsusics" target="_blank" rel="noopener">GITHUB</a>
+      <a href="https://qiita.com/atsusics" target="_blank" rel="noopener">QIITA</a>
+      <a href="https://x.com/atsusics" target="_blank" rel="noopener">X @ATSUSICS</a>
+      <a href="https://x.com/atsusics_dev" target="_blank" rel="noopener">X @ATSUSICS_DEV</a>
+      <a href="https://youtrust.jp/users/atsusics" target="_blank" rel="noopener">YOUTRUST</a>
     </div>
   </section>
 
@@ -988,12 +693,10 @@
 
 <!-- ═══ FOOTER ═══ -->
 <footer>
-  <p class="foot-display reveal">KEEP IT<br><span class="outline">RUNNING.</span></p>
-  <div class="foot-meta">
-    <span class="ok"><i></i>ALL SYSTEMS OPERATIONAL</span>
-    <span>© 2026 ATSUSHI OSHIMA</span>
-    <span>AP-NORTHEAST-1.1 (<a href="odawara_history/">ODAWARA</a>)</span>
-  </div>
+  <p class="kir reveal">Keep it running.</p>
+  <p class="foot-meta">
+    © 2026 大嶋淳司 — 小田原 (<a href="odawara_history/">AP-NORTHEAST-1.1</a>)
+  </p>
 </footer>
 
 <script>
@@ -1001,24 +704,20 @@
   var reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var finePointer = matchMedia('(pointer: fine)').matches;
 
-  /* ── The Line: scroll-linked drawing + spark tip ── */
-  var body = document.getElementById('careerBody');
-  var fill = document.getElementById('spineFill');
-  var tip = document.getElementById('spineTip');
+  /* ── quiet line: scroll-linked ── */
+  var list = document.querySelector('.career-list');
+  var qfill = document.getElementById('qlineFill');
 
   if (reduceMotion) {
-    fill.style.transform = 'scaleY(1)';
+    qfill.style.transform = 'scaleY(1)';
   } else {
     var ticking = false;
     function draw(){
       ticking = false;
-      var r = body.getBoundingClientRect();
-      var vh = window.innerHeight;
-      var p = (vh * 0.72 - r.top) / r.height;
+      var r = list.getBoundingClientRect();
+      var p = (innerHeight * 0.75 - r.top) / r.height;
       p = Math.max(0, Math.min(1, p));
-      fill.style.transform = 'scaleY(' + p.toFixed(4) + ')';
-      tip.style.top = (p * r.height) + 'px';
-      tip.style.opacity = (p > 0.001 && p < 0.999) ? 1 : 0;
+      qfill.style.transform = 'scaleY(' + p.toFixed(4) + ')';
     }
     function onScroll(){
       if (!ticking) { ticking = true; requestAnimationFrame(draw); }
@@ -1028,7 +727,7 @@
     draw();
   }
 
-  /* ── Reveal ── */
+  /* ── reveal ── */
   var targets = document.querySelectorAll('.reveal');
   if (reduceMotion || !('IntersectionObserver' in window)) {
     targets.forEach(function(el){ el.classList.add('in'); });
@@ -1041,42 +740,7 @@
     targets.forEach(function(el){ io.observe(el); });
   }
 
-  /* ── Cursor spotlight + glass glare ── */
-  if (!reduceMotion && finePointer) {
-    var spot = document.getElementById('spot');
-    document.addEventListener('mousemove', function(e){
-      spot.style.setProperty('--mx', e.clientX + 'px');
-      spot.style.setProperty('--my', e.clientY + 'px');
-    }, { passive: true });
-  }
-
-  /* ── 3D tilt on glass cards ── */
-  if (!reduceMotion && finePointer) {
-    document.querySelectorAll('.tilt').forEach(function(el){
-      var raf = null;
-      el.addEventListener('mousemove', function(e){
-        if (raf) return;
-        raf = requestAnimationFrame(function(){
-          raf = null;
-          var r = el.getBoundingClientRect();
-          var px = (e.clientX - r.left) / r.width;
-          var py = (e.clientY - r.top) / r.height;
-          el.style.transform =
-            'rotateX(' + ((py - .5) * -7).toFixed(2) + 'deg)' +
-            ' rotateY(' + ((px - .5) * 9).toFixed(2) + 'deg)' +
-            ' translateY(-3px)';
-          el.style.setProperty('--gx', (px * 100).toFixed(1) + '%');
-          el.style.setProperty('--gy', (py * 100).toFixed(1) + '%');
-        });
-      });
-      el.addEventListener('mouseleave', function(){
-        el.style.transform = '';
-        el.style.setProperty('--gy', '-60%');
-      });
-    });
-  }
-
-  /* ── Node network canvas ── */
+  /* ── constellation (quiet) ── */
   var cv = document.getElementById('net');
   if (reduceMotion || !cv.getContext) { if (cv) cv.remove(); return; }
 
@@ -1084,22 +748,22 @@
   var dpr = Math.min(devicePixelRatio || 1, 2);
   var W, H, pts = [];
   var mouse = { x: -9999, y: -9999 };
-  var LINK = 130, MLINK = 190;
+  var LINK = 120, MLINK = 150;
 
   function resize(){
     W = innerWidth; H = innerHeight;
     cv.width = W * dpr; cv.height = H * dpr;
     cv.style.width = W + 'px'; cv.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var n = Math.max(28, Math.min(85, Math.round(W * H / 18000)));
+    var n = Math.max(20, Math.min(60, Math.round(W * H / 26000)));
     pts = [];
     for (var i = 0; i < n; i++) {
       pts.push({
         x: Math.random() * W,
         y: Math.random() * H,
-        vx: (Math.random() - .5) * .45,
-        vy: (Math.random() - .5) * .45,
-        r: Math.random() * 1.3 + .8
+        vx: (Math.random() - .5) * .3,
+        vy: (Math.random() - .5) * .3,
+        r: Math.random() * 1.1 + .6
       });
     }
   }
@@ -1115,8 +779,6 @@
       mouse.x = -9999; mouse.y = -9999;
     });
   }
-
-  var ping = { t: 0, i: 0 };
 
   function frame(){
     ctx.clearRect(0, 0, W, H);
@@ -1134,7 +796,7 @@
         var dx = pts[a].x - pts[b].x, dy = pts[a].y - pts[b].y;
         var d = Math.sqrt(dx * dx + dy * dy);
         if (d < LINK) {
-          ctx.strokeStyle = 'rgba(236,234,231,' + ((1 - d / LINK) * .11).toFixed(3) + ')';
+          ctx.strokeStyle = 'rgba(233,229,220,' + ((1 - d / LINK) * .06).toFixed(3) + ')';
           ctx.beginPath();
           ctx.moveTo(pts[a].x, pts[a].y);
           ctx.lineTo(pts[b].x, pts[b].y);
@@ -1144,32 +806,19 @@
       var mdx = pts[a].x - mouse.x, mdy = pts[a].y - mouse.y;
       var md = Math.sqrt(mdx * mdx + mdy * mdy);
       if (md < MLINK) {
-        ctx.strokeStyle = 'rgba(255,77,0,' + ((1 - md / MLINK) * .38).toFixed(3) + ')';
+        ctx.strokeStyle = 'rgba(213,82,46,' + ((1 - md / MLINK) * .16).toFixed(3) + ')';
         ctx.beginPath();
         ctx.moveTo(pts[a].x, pts[a].y);
         ctx.lineTo(mouse.x, mouse.y);
         ctx.stroke();
-        pts[a].x += mdx / md * -.18;
-        pts[a].y += mdy / md * -.18;
       }
     }
 
     for (var k = 0; k < pts.length; k++) {
-      ctx.fillStyle = 'rgba(236,234,231,.5)';
+      ctx.fillStyle = 'rgba(233,229,220,.32)';
       ctx.beginPath();
       ctx.arc(pts[k].x, pts[k].y, pts[k].r, 0, 6.2832);
       ctx.fill();
-    }
-
-    /* occasional ping ring on a random node */
-    ping.t++;
-    if (ping.t > 170) { ping.t = 0; ping.i = Math.floor(Math.random() * pts.length); }
-    if (ping.t < 60) {
-      var pr = ping.t / 60;
-      ctx.strokeStyle = 'rgba(255,77,0,' + ((1 - pr) * .55).toFixed(3) + ')';
-      ctx.beginPath();
-      ctx.arc(pts[ping.i].x, pts[ping.i].y, 4 + pr * 26, 0, 6.2832);
-      ctx.stroke();
     }
 
     if (!document.hidden) requestAnimationFrame(frame);
